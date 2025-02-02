@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "529119208506",
+    "project_id": "android-finalproject-38b97",
+    "storage_bucket": "android-finalproject-38b97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529119208506:android:ec31179267146a2b59c103",
+        "android_client_info": {
+          "package_name": "com.example.finalproject_fittrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFHYPH3u93aujKHCylRkJESnY67e45yBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

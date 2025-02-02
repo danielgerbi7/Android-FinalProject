@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -55,4 +56,12 @@ dependencies {
 
     // Lottie:
     implementation (libs.lottie)
+
+    // Firebase:
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
+    // Firebase AuthUI:
+    implementation (libs.firebase.ui.auth)
+
 }

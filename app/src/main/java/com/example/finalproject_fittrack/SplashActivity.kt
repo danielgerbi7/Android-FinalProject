@@ -4,9 +4,11 @@ import android.animation.Animator
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.example.finalproject_fittrack.databinding.ActivitySplashBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {
 
@@ -38,15 +40,8 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun checkFirstTimeUser() {
-        val sharedPreferences: SharedPreferences = getSharedPreferences("FitTrackPrefs", MODE_PRIVATE)
-        val isFirstTime = sharedPreferences.getBoolean("isFirstTime", true)
-
-        if (isFirstTime) {
-            sharedPreferences.edit().putBoolean("isFirstTime", false).apply()
-            //startActivity(Intent(this, LoginActivity::class.java))
-        } else {
-            startActivity(Intent(this, MainActivity::class.java))
-        }
+        FirebaseAuth.getInstance().signOut()
+        startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }
 }
