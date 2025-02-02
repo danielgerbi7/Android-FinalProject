@@ -13,7 +13,7 @@ lifecycleViewmodelKtx = "2.8.7"
 navigationFragmentKtx = "2.8.6"
 navigationUiKtx = "2.8.6"
 lottie = "6.6.2"
-activity = "1.9.3"
+activity = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
