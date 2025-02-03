@@ -12,14 +12,32 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.finalproject_fittrack.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_workout"
+        android:name="com.example.finalproject_fittrack.ui.workout.WorkoutFragment"
+        android:label="@string/title_workout"
+        tools:layout="@layout/fragment_workout" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.finalproject_fittrack.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/workoutListFragment"
+        android:name="com.example.finalproject_fittrack.ui.workout.WorkoutListFragment"
+        android:label="Workout List"
+        tools:layout="@layout/fragment_workout_list">
+        <argument
+            android:name="category"
+            app:argType="string"
+            android:defaultValue="Cardio"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_progress"
+        android:name="com.example.finalproject_fittrack.ui.progress.ProgressFragment"
+        android:label="Progress"
+        tools:layout="@layout/fragment_progress" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.finalproject_fittrack.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+
 </navigation>

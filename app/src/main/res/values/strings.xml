@@ -3,4 +3,21 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_workout">Workout Plans</string>
+    <string name="title_progress">Progress</string>
+    <string name="title_profile">Profile</string>
+    <string name="your_favorite_exercises">Your Favorite Exercises:</string>
+    <string name="start_workout">Start Workout</string>
+    <string name="last_workout_full_body_strength">Last Workout: Full Body Strength</string>
+    <string name="_50_of_daily_goal_achieved">50% of daily goal achieved!</string>
+    <string name="_7_500_steps">🚶‍♂️ 7,500 steps</string>
+    <string name="_450_kcal">🔥 450 kcal</string>
+    <string name="welcome_user">Welcome, User!</string>
+    <string name="workout_name">Workout Name</string>
+    <string name="workout_description">Workout description</string>
+    <string name="cardio_workouts">Cardio Workouts</string>
+    <string name="strength_workouts">Strength Workouts</string>
+    <string name="are_you_ready_to_sweat">Are you ready to sweat?</string>
+    <string name="calories_burned">Calories Burned: 100</string>
+    <string name="calories_burned_0_kcal">Calories Burned: 0 kcal</string>
 </resources>
