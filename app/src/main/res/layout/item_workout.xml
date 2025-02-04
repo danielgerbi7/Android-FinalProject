@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,56 +10,75 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="@dimen/margin_8">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/workout_IMG"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_workout_place"
+            android:id="@+id/workout_IMG_image"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_workout_place" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/workout_LBL_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/margin_start_120"
             android:text="@string/workout_name"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginStart="120dp"
-            android:layout_alignParentTop="true"/>
+            android:textSize="@dimen/workout_text_size"
+            android:textStyle="bold" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/workout_LBL_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/workout_LBL_name"
+            android:layout_marginStart="@dimen/margin_start_120"
             android:text="@string/workout_description"
-            android:textSize="14sp"
-            android:layout_marginStart="120dp"
-            android:layout_below="@id/workout_LBL_name"/>
+            android:textSize="@dimen/text_size_14" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/workoutLBLCalories"
+            android:id="@+id/workout_LBL_calories"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/calories_burned"
-            android:textSize="14sp"
-            android:textColor="@android:color/holo_red_dark"
             android:layout_below="@id/workout_LBL_description"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginStart="@dimen/margin_start_120"
+            android:layout_marginTop="4dp"
+            android:text="@string/calories_burned"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="@dimen/text_size_14" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/workout_IMG_favorite"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="8dp"
+            android:layout_width="@dimen/heart_size"
+            android:layout_height="@dimen/heart_size"
             android:layout_alignParentTop="true"
-            android:src="@drawable/empty_heart"/>
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:src="@drawable/empty_heart" />
 
-        
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/workout_LBL_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/workout_LBL_calories"
+            android:layout_marginStart="@dimen/margin_start_120"
+            android:layout_toEndOf="@id/workout_IMG_image"
+            android:text="@string/duration_45_min"
+            android:textSize="@dimen/text_size_14" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/workout_IMG_start"
+            android:layout_width="@dimen/heart_size"
+            android:layout_height="@dimen/heart_size"
+            android:layout_below="@id/workout_LBL_duration"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:src="@drawable/start" />
+
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

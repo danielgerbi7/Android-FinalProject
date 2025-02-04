@@ -14,9 +14,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalproject_fittrack.R
 import com.example.finalproject_fittrack.databinding.FragmentHomeBinding
-import com.example.finalproject_fittrack.logic.WorkoutRepository
+import com.example.finalproject_fittrack.logic.WorkoutManager
 import com.example.finalproject_fittrack.models.WorkoutModel
-import com.example.finalproject_fittrack.ui.workout.WorkoutAdapter
+import com.example.finalproject_fittrack.adapter.WorkoutAdapter
+import com.example.finalproject_fittrack.interfaces.WorkoutCallback
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,10 +39,11 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        sharedPreferences = requireContext().getSharedPreferences("FitTrackPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("FitTrackPrefs", Context.MODE_PRIVATE)
 
         val user = FirebaseAuth.getInstance().currentUser
-        binding.tvWelcome.text = "Welcome, ${user?.displayName ?: "User"}!"
+        "Welcome, ${user?.displayName ?: "User"}!".also { binding.FHLBLWelcome.text = it }
 
         dailyGoal = sharedPreferences.getInt("daily_goal", 500)
         currentCaloriesBurned = calculateTotalCaloriesBurned()
@@ -51,7 +53,7 @@ class HomeFragment : Fragment() {
 
         checkDailyGoalAfterLogin()
 
-        binding.btnStartWorkout.setOnClickListener {
+        binding.FHBTNStartWorkout.setOnClickListener {
             findNavController().navigate(R.id.navigation_workout)
         }
 
@@ -59,15 +61,20 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupFavoritesRecyclerView() {
-        favoriteWorkouts = WorkoutRepository.getFavoriteWorkouts().toMutableList()
-        favoriteAdapter = WorkoutAdapter(
-            favoriteWorkouts,
-            onFavoriteClick = { workout, position -> toggleFavorite(workout, position) },
-            onItemClick = { /* Future implementation for detailed workout screen */ }
-        )
+        favoriteWorkouts = WorkoutManager.getFavoriteWorkouts().toMutableList()
+        favoriteAdapter = WorkoutAdapter(favoriteWorkouts, object : WorkoutCallback {
+            override fun onFavoriteClicked(workout: WorkoutModel, position: Int) {
+                toggleFavorite(workout, position)
+            }
 
-        binding.rvFavorites.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            override fun onStartWorkout(workout: WorkoutModel, position: Int) {
+                findNavController().navigate(R.id.navigation_workout)
+            }
+        })
+
+        binding.FHRVFavoritesList.apply {
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = favoriteAdapter
             setHasFixedSize(true)
         }
@@ -84,15 +91,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun calculateTotalCaloriesBurned(): Int {
-        val favoriteWorkouts = WorkoutRepository.getFavoriteWorkouts()
+        val favoriteWorkouts = WorkoutManager.getFavoriteWorkouts()
         return favoriteWorkouts.sumOf { it.caloriesBurned }
     }
 
     private fun updateProgressBar() {
         val progress = if (dailyGoal > 0) (currentCaloriesBurned * 100 / dailyGoal) else 0
-        binding.progressDailyGoal.progress = progress
-        binding.tvGoalStatus.text = "$progress% of daily goal achieved!"
-        binding.tvCaloriesBurned.text = "Calories Burned: $currentCaloriesBurned kcal"
+        binding.FHPRDailyGoal.progress = progress
+        "$progress% of daily goal achieved!".also { binding.FHLBLGoalStatus.text = it }
+        "Calories Burned: $currentCaloriesBurned kcal".also {
+            binding.FHLBLCaloriesBurned.text = it
+        }
     }
 
     private fun askUserForDailyGoal() {
@@ -109,7 +118,11 @@ class HomeFragment : Fragment() {
                     sharedPreferences.edit().putInt("daily_goal", dailyGoal).apply()
                     updateProgressBar()
                 } else {
-                    Toast.makeText(requireContext(), "Please enter a valid number!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Please enter a valid number!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             .setCancelable(false)
@@ -118,7 +131,7 @@ class HomeFragment : Fragment() {
 
     fun updateFavorites() {
         favoriteWorkouts.clear()
-        favoriteWorkouts.addAll(WorkoutRepository.getFavoriteWorkouts())
+        favoriteWorkouts.addAll(WorkoutManager.getFavoriteWorkouts())
         favoriteAdapter.notifyDataSetChanged()
         updateCaloriesBurned()
     }
@@ -130,8 +143,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun toggleFavorite(workout: WorkoutModel, position: Int) {
-        WorkoutRepository.updateFavoriteStatus(workout)
+        WorkoutManager.updateFavoriteStatus(workout)
         updateFavorites()
+    }
+
+    fun addCalories(calories: Int) {
+        currentCaloriesBurned += calories
+        sharedPreferences.edit().putInt("calories_burned", currentCaloriesBurned).apply()
+        updateProgressBar()
     }
 
     private fun getTodayDate(): String {

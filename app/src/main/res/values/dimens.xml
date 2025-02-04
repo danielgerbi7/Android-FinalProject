@@ -5,4 +5,10 @@
     <dimen name="padding">16dp</dimen>
     <dimen name="margin_Bottom">8dp</dimen>
     <dimen name="default_margin">16dp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
+    <dimen name="heart_size">24dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_start_120">120dp</dimen>
+    <dimen name="image_size">100dp</dimen>
+    <dimen name="workout_text_size">18sp</dimen>
 </resources>

@@ -20,4 +20,5 @@
     <string name="are_you_ready_to_sweat">Are you ready to sweat?</string>
     <string name="calories_burned">Calories Burned: 100</string>
     <string name="calories_burned_0_kcal">Calories Burned: 0 kcal</string>
+    <string name="duration_45_min">Duration: 45 min</string>
 </resources>

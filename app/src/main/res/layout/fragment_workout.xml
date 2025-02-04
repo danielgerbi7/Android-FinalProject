@@ -9,7 +9,7 @@
     tools:context=".ui.workout.WorkoutFragment">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/txtMotivation"
+        android:id="@+id/FW_LBL_motivation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/are_you_ready_to_sweat"
@@ -19,14 +19,14 @@
         android:textColor="@color/black"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCardio"
+        android:id="@+id/FW_BTN_cardio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/cardio_workouts"
         android:layout_marginBottom="20dp"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnStrength"
+        android:id="@+id/FW_BTN_strength"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/strength_workouts"/>

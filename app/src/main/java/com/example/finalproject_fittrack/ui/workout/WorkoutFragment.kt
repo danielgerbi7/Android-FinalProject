@@ -19,18 +19,17 @@ class WorkoutFragment : Fragment() {
     ): View {
         _binding = FragmentWorkoutBinding.inflate(inflater, container, false)
 
-        binding.btnCardio.setOnClickListener {
+        binding.FWBTNCardio.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("category", "Cardio")
             findNavController().navigate(R.id.workoutListFragment, bundle)
         }
 
-        binding.btnStrength.setOnClickListener {
+        binding.FWBTNStrength.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("category", "Strength")
             findNavController().navigate(R.id.workoutListFragment, bundle)
         }
-
         return binding.root
     }
 

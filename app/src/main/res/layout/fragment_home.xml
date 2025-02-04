@@ -9,7 +9,7 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvWelcome"
+            android:id="@+id/FH_LBL_welcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/welcome_user"
@@ -24,7 +24,7 @@
             android:gravity="center">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvCaloriesBurned"
+                android:id="@+id/FH_LBL_caloriesBurned"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/calories_burned_0_kcal"
@@ -34,7 +34,7 @@
         </LinearLayout>
 
         <ProgressBar
-            android:id="@+id/progressDailyGoal"
+            android:id="@+id/FH_PR_dailyGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/progressBarStyleHorizontal"
@@ -42,8 +42,8 @@
             android:max="100"
             android:layout_marginTop="@dimen/padding"/>
 
-        <TextView
-            android:id="@+id/tvGoalStatus"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/FH_LBL_goalStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/_50_of_daily_goal_achieved"
@@ -51,14 +51,15 @@
             android:gravity="center"
             android:layout_marginBottom="@dimen/padding"/>
 
-        <Button
-            android:id="@+id/btnStartWorkout"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/FH_BTN_startWorkout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/start_workout"
             android:layout_marginBottom="@dimen/padding"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/FH_LBL_favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/your_favorite_exercises"
@@ -67,7 +68,7 @@
             android:layout_marginBottom="@dimen/margin_Bottom"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFavorites"
+            android:id="@+id/FH_RV_favoritesList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/padding"/>
