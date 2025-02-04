@@ -1,6 +1,7 @@
 package com.example.finalproject_fittrack
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,14 +12,18 @@ import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        if (FirebaseAuth.getInstance().currentUser == null) {
-            signIn()
-        } else {
+        sharedPreferences = getSharedPreferences("FitTrackPrefs", MODE_PRIVATE)
+
+        if (FirebaseAuth.getInstance().currentUser != null || isUserLoggedInBefore()) {
             transactToNextScreen()
+        } else {
+            signIn()
         }
     }
 
@@ -51,10 +56,19 @@ class LoginActivity : AppCompatActivity() {
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         if (result.resultCode == RESULT_OK) {
+            saveUserLoginStatus()
             transactToNextScreen()
         } else {
             Toast.makeText(this, "Login failed!", Toast.LENGTH_LONG).show()
             signIn()
         }
+    }
+
+    private fun saveUserLoginStatus() {
+        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+    }
+
+    private fun isUserLoggedInBefore(): Boolean {
+        return sharedPreferences.getBoolean("isLoggedIn", false)
     }
 }

@@ -51,6 +51,17 @@
             android:textColor="@android:color/holo_red_dark"
             android:textSize="@dimen/text_size_14" />
 
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/workout_LBL_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/workout_LBL_calories"
+            android:layout_marginStart="@dimen/margin_start_120"
+            android:layout_marginTop="4dp"
+            android:text="@string/duration_45_min"
+            android:textSize="@dimen/text_size_14" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/workout_IMG_favorite"
             android:layout_width="@dimen/heart_size"
@@ -59,16 +70,6 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/margin_8"
             android:src="@drawable/empty_heart" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/workout_LBL_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/workout_LBL_calories"
-            android:layout_marginStart="@dimen/margin_start_120"
-            android:layout_toEndOf="@id/workout_IMG_image"
-            android:text="@string/duration_45_min"
-            android:textSize="@dimen/text_size_14" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/workout_IMG_start"

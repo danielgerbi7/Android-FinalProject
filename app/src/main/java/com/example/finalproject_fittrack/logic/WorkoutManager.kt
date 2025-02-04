@@ -1,14 +1,24 @@
 package com.example.finalproject_fittrack.logic
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.example.finalproject_fittrack.App
 import com.example.finalproject_fittrack.R
 import com.example.finalproject_fittrack.models.WorkoutModel
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
+
 
 object WorkoutManager {
 
     private val workouts = mutableListOf<WorkoutModel>()
+    private var activeWorkout: WorkoutModel? = null
+    private lateinit var sharedPreferences: SharedPreferences
 
-    init {
+    fun init(context: Context) {
+        sharedPreferences = context.getSharedPreferences("FitTrackPrefs", Context.MODE_PRIVATE)
         loadWorkoutData()
+        loadFavoriteWorkouts()
     }
 
     private fun loadWorkoutData() {
@@ -133,5 +143,51 @@ object WorkoutManager {
 
     fun updateFavoriteStatus(workout: WorkoutModel) {
         workout.isFavorite = !workout.isFavorite
+        saveFavoriteWorkouts()
     }
+
+    private fun saveFavoriteWorkouts() {
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(getFavoriteWorkouts())
+        editor.putString("favorite_workouts", json)
+        editor.apply()
+    }
+
+    private fun loadFavoriteWorkouts() {
+        val gson = Gson()
+        val json = sharedPreferences.getString("favorite_workouts", null)
+        val type = object : TypeToken<List<WorkoutModel>>() {}.type
+        val savedFavorites: List<WorkoutModel>? = gson.fromJson(json, type)
+
+        if (savedFavorites != null) {
+            for (savedWorkout in savedFavorites) {
+                workouts.find { it.name == savedWorkout.name }?.isFavorite = true
+            }
+        }
+    }
+
+    fun setActiveWorkout(workout: WorkoutModel) {
+        activeWorkout = workout
+        workout.isInProgress = true
+    }
+
+    fun completeWorkout(workout: WorkoutModel, caloriesBurned: Int) {
+        activeWorkout = null
+        workout.isInProgress = false
+
+        val totalCaloriesBurned = sharedPreferences.getInt("calories_burned", 0) + caloriesBurned
+        sharedPreferences.edit().putInt("calories_burned", totalCaloriesBurned).apply()
+    }
+
+    private fun addCaloriesToTotal(calories: Int) {
+        val sharedPreferences = App.getAppContext().getSharedPreferences("FitTrackPrefs", Context.MODE_PRIVATE)
+        val currentCalories = sharedPreferences.getInt("calories_burned", 0)
+        sharedPreferences.edit().putInt("calories_burned", currentCalories + calories).apply()
+    }
+
+    fun isWorkoutActive(): Boolean = activeWorkout != null
+
+    fun getActiveWorkout(): WorkoutModel? = activeWorkout
+
 }

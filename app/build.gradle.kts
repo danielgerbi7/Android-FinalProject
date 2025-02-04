@@ -64,4 +64,7 @@ dependencies {
     // Firebase AuthUI:
     implementation (libs.firebase.ui.auth)
 
+    //Gson
+    implementation(libs.gson)
+
 }

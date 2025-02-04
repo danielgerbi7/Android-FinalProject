@@ -2,17 +2,21 @@ package com.example.finalproject_fittrack.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalproject_fittrack.MainActivity
 import com.example.finalproject_fittrack.R
 import com.example.finalproject_fittrack.databinding.ItemWorkoutBinding
-import com.example.finalproject_fittrack.interfaces.WorkoutCallback
+import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
+import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
+import com.example.finalproject_fittrack.logic.WorkoutManager
 import com.example.finalproject_fittrack.models.WorkoutModel
-import com.example.finalproject_fittrack.ui.home.HomeFragment
 
 class WorkoutAdapter(
+
     private var workouts: MutableList<WorkoutModel>,
-    private val workoutCallback: WorkoutCallback
+    private val workoutFavoriteCallback: WorkoutFavoriteCallback,
+    private val workoutProgressCallback: WorkoutProgressCallback
 ) : RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
 
@@ -38,18 +42,21 @@ class WorkoutAdapter(
                 )
 
                 binding.workoutIMGFavorite.setOnClickListener {
-                    workoutCallback.onFavoriteClicked(getItem(adapterPosition), adapterPosition)
+                    workoutFavoriteCallback.onFavoriteClicked(getItem(adapterPosition), adapterPosition)
                 }
 
                 binding.workoutIMGStart.setOnClickListener {
-                    workoutCallback.onStartWorkout(getItem(adapterPosition), adapterPosition)
-
-                    (binding.root.context as? MainActivity)?.let { mainActivity ->
-                        val homeFragment = mainActivity.supportFragmentManager
-                            .findFragmentByTag("HomeFragment") as? HomeFragment
-                        homeFragment?.addCalories(workout.caloriesBurned)
+                    if (WorkoutManager.isWorkoutActive()) {
+                        Toast.makeText(binding.root.context, "A workout is already in progress. Finish it first!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        WorkoutManager.setActiveWorkout(workout)
+                        workoutProgressCallback.onStartWorkout(getItem(adapterPosition), adapterPosition)
+                        Toast.makeText(binding.root.context, "Workout started! Check the progress screen.", Toast.LENGTH_SHORT).show()
+                        val navController = Navigation.findNavController(binding.root)
+                        navController.navigate(R.id.navigation_progress)
                     }
                 }
+
             }
         }
     }

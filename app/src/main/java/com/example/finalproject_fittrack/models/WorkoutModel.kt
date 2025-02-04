@@ -1,5 +1,7 @@
 package com.example.finalproject_fittrack.models
 
+import java.io.Serializable
+
 data class WorkoutModel private constructor(
     val name: String,
     val description: String,
@@ -9,7 +11,7 @@ data class WorkoutModel private constructor(
     val duration: Int,
     var isFavorite: Boolean = false,
     var isInProgress: Boolean = false
-) {
+): Serializable {
 
     class Builder {
         private var name: String = ""
