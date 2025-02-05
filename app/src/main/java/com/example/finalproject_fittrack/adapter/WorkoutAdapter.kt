@@ -11,6 +11,7 @@ import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
 import com.example.finalproject_fittrack.logic.WorkoutManager
 import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.utilities.Constants
 
 class WorkoutAdapter(
 
@@ -47,11 +48,11 @@ class WorkoutAdapter(
 
                 binding.workoutIMGStart.setOnClickListener {
                     if (WorkoutManager.isWorkoutActive()) {
-                        Toast.makeText(binding.root.context, "A workout is already in progress. Finish it first!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(binding.root.context,Constants.Messages.WORKOUT_IN_PROGRESS, Toast.LENGTH_SHORT).show()
                     } else {
                         WorkoutManager.setActiveWorkout(workout)
                         workoutProgressCallback.onStartWorkout(getItem(adapterPosition), adapterPosition)
-                        Toast.makeText(binding.root.context, "Workout started! Check the progress screen.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(binding.root.context, Constants.Messages.WORKOUT_STARTED, Toast.LENGTH_SHORT).show()
                         val navController = Navigation.findNavController(binding.root)
                         navController.navigate(R.id.navigation_progress)
                     }

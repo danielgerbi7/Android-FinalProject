@@ -73,13 +73,8 @@ class ProgressFragment : Fragment() {
 
     private fun completeWorkout() {
         activeWorkout?.let { workout ->
-            val elapsedMillis = System.currentTimeMillis() - startTimeMillis
-            val elapsedMinutes = elapsedMillis / 60000.0
-            val caloriesPerMinute = workout.caloriesBurned.toDouble() / workout.duration
-            val caloriesBurned = (caloriesPerMinute * elapsedMinutes).toInt()
-
+            val caloriesBurned = calculateCaloriesBurned(workout)
             WorkoutManager.completeWorkout(workout, caloriesBurned)
-
             Toast.makeText(
                 requireContext(),
                 "Workout complete! You burned $caloriesBurned kcal.",
@@ -92,11 +87,7 @@ class ProgressFragment : Fragment() {
     private fun finishWorkout() {
         activeWorkout?.let { workout ->
             workoutTimer?.cancel()
-            val elapsedMillis = System.currentTimeMillis() - startTimeMillis
-            val elapsedMinutes = elapsedMillis / 60000.0
-            val caloriesPerMinute = workout.caloriesBurned.toDouble() / workout.duration
-            val caloriesBurned = (caloriesPerMinute * elapsedMinutes).toInt()
-
+            val caloriesBurned = calculateCaloriesBurned(workout)
             Toast.makeText(
                 requireContext(),
                 "Workout ended early! You burned $caloriesBurned kcal.",
@@ -107,6 +98,14 @@ class ProgressFragment : Fragment() {
         }
         resetUI()
     }
+
+    private fun calculateCaloriesBurned(workout: WorkoutModel): Int {
+        val elapsedMillis = System.currentTimeMillis() - startTimeMillis
+        val elapsedMinutes = elapsedMillis / 60000.0
+        val caloriesPerMinute = workout.caloriesBurned.toDouble() / workout.duration
+        return (caloriesPerMinute * elapsedMinutes).toInt()
+    }
+
 
     private fun resetUI() {
         activeWorkout = null

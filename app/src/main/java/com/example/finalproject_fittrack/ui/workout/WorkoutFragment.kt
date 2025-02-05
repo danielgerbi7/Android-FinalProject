@@ -19,18 +19,23 @@ class WorkoutFragment : Fragment() {
     ): View {
         _binding = FragmentWorkoutBinding.inflate(inflater, container, false)
 
-        binding.FWBTNCardio.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("category", "Cardio")
-            findNavController().navigate(R.id.workoutListFragment, bundle)
-        }
+        setupButtons()
 
-        binding.FWBTNStrength.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("category", "Strength")
-            findNavController().navigate(R.id.workoutListFragment, bundle)
-        }
         return binding.root
+    }
+
+    private fun setupButtons() {
+        binding.apply {
+            FWBTNCardio.setOnClickListener { navigateToWorkoutList("Cardio") }
+            FWBTNStrength.setOnClickListener { navigateToWorkoutList("Strength") }
+        }
+    }
+
+    private fun navigateToWorkoutList(category: String) {
+        val bundle = Bundle().apply {
+            putString("category", category)
+        }
+        findNavController().navigate(R.id.workoutListFragment, bundle)
     }
 
     override fun onDestroyView() {

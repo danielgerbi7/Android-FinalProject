@@ -1,5 +1,6 @@
 package com.example.finalproject_fittrack.ui.home
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -19,7 +20,8 @@ import com.example.finalproject_fittrack.models.WorkoutModel
 import com.example.finalproject_fittrack.adapter.WorkoutAdapter
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
-import com.google.firebase.auth.FirebaseAuth
+import com.example.finalproject_fittrack.logic.ProfileManager
+import com.example.finalproject_fittrack.utilities.Constants
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -41,13 +43,13 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         sharedPreferences =
-            requireContext().getSharedPreferences("FitTrackPrefs", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
 
-        val user = FirebaseAuth.getInstance().currentUser
-        "Welcome, ${user?.displayName ?: "User"}!".also { binding.FHLBLWelcome.text = it }
+        checkAndResetDailyCalories()
+        loadUserProfile()
 
-        dailyGoal = sharedPreferences.getInt("daily_goal", 500)
-        currentCaloriesBurned = sharedPreferences.getInt("calories_burned", 0)
+        dailyGoal = sharedPreferences.getInt(Constants.SharedPrefs.DAILY_GOAL, 500)
+        currentCaloriesBurned = sharedPreferences.getInt(Constants.SharedPrefs.CALORIES_BURNED, 0)
 
         updateProgressBar()
         setupFavoritesRecyclerView()
@@ -59,6 +61,26 @@ class HomeFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun loadUserProfile() {
+        val userName = ProfileManager.getInstance().getUserName()
+        "Welcome, $userName!".also { binding.FHLBLWelcome.text = it }
+    }
+
+
+    private fun checkAndResetDailyCalories() {
+        val todayDate = getTodayDate()
+        val lastLoginDate = sharedPreferences.getString(Constants.SharedPrefs.LAST_LOGIN_DATE, "")
+
+        if (lastLoginDate != todayDate) {
+            sharedPreferences.edit()
+                .putInt(Constants.SharedPrefs.CALORIES_BURNED, 0)
+                .putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate)
+                .apply()
+            currentCaloriesBurned = 0
+            updateProgressBar()
+        }
     }
 
     private fun setupFavoritesRecyclerView() {
@@ -88,12 +110,24 @@ class HomeFragment : Fragment() {
 
     private fun checkDailyGoalAfterLogin() {
         val todayDate = getTodayDate()
-        val lastLoginDate = sharedPreferences.getString("last_login_date", "")
+        val lastLoginDate = sharedPreferences.getString(Constants.SharedPrefs.LAST_LOGIN_DATE, "")
 
         if (lastLoginDate != todayDate) {
             askUserForDailyGoal()
-            sharedPreferences.edit().putString("last_login_date", todayDate).apply()
+            sharedPreferences.edit().putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate).apply()
+            if (!isUserProfileComplete()) {
+                findNavController().navigate(R.id.navigation_profile)
+            }
         }
+    }
+
+    private fun isUserProfileComplete(): Boolean {
+        val name = sharedPreferences.getString("user_name", "").orEmpty()
+        val age = sharedPreferences.getInt("user_age", 0)
+        val height = sharedPreferences.getFloat("user_height", 0f)
+        val weight = sharedPreferences.getFloat("user_weight", 0f)
+
+        return name.isNotEmpty() && age > 0 && height > 0f && weight > 0f
     }
 
     private fun updateProgressBar() {
@@ -116,7 +150,7 @@ class HomeFragment : Fragment() {
                 val inputGoal = editText.text.toString().toIntOrNull()
                 if (inputGoal != null && inputGoal > 0) {
                     dailyGoal = inputGoal
-                    sharedPreferences.edit().putInt("daily_goal", dailyGoal).apply()
+                    sharedPreferences.edit().putInt(Constants.SharedPrefs.DAILY_GOAL, dailyGoal).apply()
                     updateProgressBar()
                 } else {
                     Toast.makeText(
@@ -130,6 +164,7 @@ class HomeFragment : Fragment() {
             .show()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun updateFavorites() {
         favoriteWorkouts.clear()
         favoriteWorkouts.addAll(WorkoutManager.getFavoriteWorkouts())
@@ -141,15 +176,17 @@ class HomeFragment : Fragment() {
         updateFavorites()
     }
 
-    fun addCalories(calories: Int) {
-        currentCaloriesBurned += calories
-        sharedPreferences.edit().putInt("calories_burned", currentCaloriesBurned).apply()
-        updateProgressBar()
-    }
-
     private fun getTodayDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date())
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        parentFragmentManager.setFragmentResultListener("update_home", this) { _, _ ->
+            loadUserProfile()
+        }
     }
 
     override fun onDestroyView() {

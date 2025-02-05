@@ -34,6 +34,11 @@
             android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.FinalProjectFitTrack" />
+
+        <activity
+            android:name=".ProfileSetupActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FinalProjectFitTrack" />
     </application>
 
 </manifest>

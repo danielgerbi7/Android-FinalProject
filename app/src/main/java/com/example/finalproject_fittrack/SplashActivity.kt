@@ -1,6 +1,7 @@
 package com.example.finalproject_fittrack
 
 import android.animation.Animator
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.example.finalproject_fittrack.databinding.ActivitySplashBinding
 import com.google.firebase.auth.FirebaseAuth
 
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding

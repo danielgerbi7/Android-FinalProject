@@ -2,6 +2,7 @@ package com.example.finalproject_fittrack
 
 import android.app.Application
 import android.content.Context
+import com.example.finalproject_fittrack.logic.ProfileManager
 import com.example.finalproject_fittrack.logic.WorkoutManager
 
 class App : Application() {
@@ -17,6 +18,7 @@ class App : Application() {
         super.onCreate()
         instance = this
 
+        ProfileManager.init(this)
         WorkoutManager.init(this)
     }
 }

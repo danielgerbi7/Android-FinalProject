@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/profile_EDIT_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:minHeight="48dp"
+        android:hint="@string/enter_your_name" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/profile_EDIT_age"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:layout_margin="@dimen/margin_8"
+        android:hint="@string/enter_your_age" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/profile_EDIT_height"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:layout_margin="@dimen/margin_8"
+        android:hint="@string/enter_your_height_cm" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/profile_EDIT_weight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:layout_margin="@dimen/margin_8"
+        android:minHeight="48dp"
+        android:hint="@string/enter_your_weight_kg" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_BTN_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:minHeight="48dp"
+        android:text="@string/save_profile" />
+</LinearLayout>

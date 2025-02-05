@@ -1,22 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.profile.ProfileFragment">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/text_profile"
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8"
-        android:layout_marginEnd="@dimen/margin_8"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_margin="@dimen/margin_8"
+        android:hint="@string/name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profile_EDIT_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:hint="@string/age">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profile_EDIT_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:hint="@string/height_cm">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profile_EDIT_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:hint="@string/weight_kg">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/profile_EDIT_weight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/profile_LBL_bmi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/bmi"
+        android:textColor="@color/black"
+        android:textSize="@dimen/workout_text_size" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/profile_LBL_bmi_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="@string/status"
+        android:textColor="@color/black"
+        android:textSize="@dimen/workout_text_size" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_BTN_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:text="@string/edit_profile" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_BTN_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:text="@string/save_profile"
+        android:visibility="gone" />
+</LinearLayout>

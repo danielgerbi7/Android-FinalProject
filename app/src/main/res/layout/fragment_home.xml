@@ -12,66 +12,66 @@
             android:id="@+id/FH_LBL_welcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding"
             android:text="@string/welcome_user"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/padding"/>
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/FH_LBL_caloriesBurned"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/padding"
                 android:text="@string/calories_burned_0_kcal"
-                android:textSize="18sp"
-                android:layout_marginEnd="@dimen/padding"/>
+                android:textSize="18sp" />
 
         </LinearLayout>
 
         <ProgressBar
             android:id="@+id/FH_PR_dailyGoal"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:progress="50"
+            android:layout_marginTop="@dimen/padding"
             android:max="100"
-            android:layout_marginTop="@dimen/padding"/>
+            android:progress="50" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/FH_LBL_goalStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_50_of_daily_goal_achieved"
-            android:textSize="16sp"
+            android:layout_marginBottom="@dimen/padding"
             android:gravity="center"
-            android:layout_marginBottom="@dimen/padding"/>
+            android:text="@string/_50_of_daily_goal_achieved"
+            android:textSize="16sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/FH_BTN_startWorkout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/start_workout"
-            android:layout_marginBottom="@dimen/padding"/>
+            android:layout_marginBottom="@dimen/padding"
+            android:text="@string/start_workout" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/FH_LBL_favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_Bottom"
             android:text="@string/your_favorite_exercises"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/margin_Bottom"/>
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/FH_RV_favoritesList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/padding"/>
+            android:layout_marginBottom="@dimen/padding" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
