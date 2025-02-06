@@ -32,10 +32,15 @@ class ProfileSetupActivity : AppCompatActivity() {
             return
         }
 
-        ProfileManager.getInstance().saveProfile(name, age, height, weight)
-
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        ProfileManager.getInstance().saveProfile(name, age, height, weight) { success ->
+            if (success) {
+                Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Failed to save profile. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

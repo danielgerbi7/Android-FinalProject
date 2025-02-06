@@ -1,20 +1,30 @@
 package com.example.finalproject_fittrack.logic
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.example.finalproject_fittrack.utilities.Constants
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ProfileManager private constructor(context: Context) {
 
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.Firebase.USERS_REF)
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     companion object {
+        @Volatile
         private var instance: ProfileManager? = null
 
         fun init(context: Context) {
             if (instance == null) {
-                instance = ProfileManager(context)
+                synchronized(this) {
+                    if (instance == null) {
+                        instance = ProfileManager(context)
+                    }
+                }
             }
         }
 
@@ -23,40 +33,81 @@ class ProfileManager private constructor(context: Context) {
         }
     }
 
-    fun isProfileComplete(): Boolean {
-        return sharedPreferences.getBoolean(Constants.SharedPrefs.PREFS_NAME, false)
+    fun checkAndSaveDefaultWorkouts() {
+        val userId = getCurrentUserId() ?: return
+        database.child(userId).child("workouts")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        WorkoutManager.saveDefaultWorkouts()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
     }
 
-    fun saveProfile(name: String, age: Int, height: Float, weight: Float) {
-        sharedPreferences.edit()
-            .putString(Constants.SharedPrefs.USER_NAME, name)
-            .putInt(Constants.SharedPrefs.USER_AGE, age)
-            .putFloat(Constants.SharedPrefs.USER_HEIGHT, height)
-            .putFloat(Constants.SharedPrefs.USER_WEIGHT, weight)
-            .putBoolean(Constants.SharedPrefs.PROFILE_SETUP_COMPLETE, true)
-            .apply()
+    private fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
     }
 
-    fun calculateBMI(): Pair<Float, String> {
-        val height = getUserHeight() / 100
-        val weight = getUserWeight()
+    fun saveProfile(name: String, age: Int, height: Float, weight: Float, onComplete: (Boolean) -> Unit) {
+        val userId = getCurrentUserId() ?: return
 
-        return if (height > 0 && weight > 0) {
-            val bmi = weight / (height * height)
-            val status = when {
-                bmi < 18.5 -> "Underweight"
-                bmi in 18.5..24.9 -> "Normal"
-                bmi in 25.0..29.9 -> "Overweight"
-                else -> "Obese"
-            }
-            Pair(bmi, status)
-        } else {
-            Pair(0f, "Unknown")
+        val userProfile = mapOf(
+            "name" to name,
+            "age" to age,
+            "height" to height,
+            "weight" to weight,
+            "profile_complete" to true
+        )
+
+        database.child(userId).setValue(userProfile)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
+    }
+
+
+    fun getProfile(onComplete: (Map<String, Any>?) -> Unit) {
+        val userId = getCurrentUserId() ?: return
+
+        database.child(userId).get().addOnSuccessListener { snapshot ->
+            val profileData = snapshot.value as? Map<String, Any>
+            onComplete(profileData)
+        }.addOnFailureListener {
+            onComplete(null)
         }
     }
 
-    fun getUserName(): String = sharedPreferences.getString(Constants.SharedPrefs.USER_NAME, "User") ?: "User"
-    fun getUserAge(): Int = sharedPreferences.getInt(Constants.SharedPrefs.USER_AGE, 0)
-    fun getUserHeight(): Float = sharedPreferences.getFloat(Constants.SharedPrefs.USER_HEIGHT, 0f)
-    fun getUserWeight(): Float = sharedPreferences.getFloat(Constants.SharedPrefs.USER_WEIGHT, 0f)
+    fun isProfileComplete(onComplete: (Boolean) -> Unit) {
+        getProfile { profileData ->
+            val isComplete = profileData?.get("profile_complete") as? Boolean ?: false
+            onComplete(isComplete)
+        }
+    }
+
+    fun calculateBMI(onComplete: (Float, String) -> Unit) {
+        getProfile { profileData ->
+            val height = (profileData?.get("height") as? Number)?.toFloat() ?: 0f
+            val weight = (profileData?.get("weight") as? Number)?.toFloat() ?: 0f
+
+            val bmi: Float
+            val status: String
+
+            if (height > 0 && weight > 0) {
+                bmi = weight / ((height / 100) * (height / 100))
+                status = when {
+                    bmi < 18.5 -> "Underweight"
+                    bmi in 18.5..24.9 -> "Normal"
+                    bmi in 25.0..29.9 -> "Overweight"
+                    else -> "Obese"
+                }
+            } else {
+                bmi = 0f
+                status = "Unknown"
+            }
+            onComplete(bmi, status)
+        }
+    }
 }

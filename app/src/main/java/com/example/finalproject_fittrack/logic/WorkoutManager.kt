@@ -1,187 +1,242 @@
 package com.example.finalproject_fittrack.logic
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.example.finalproject_fittrack.R
-import com.example.finalproject_fittrack.models.WorkoutModel
+import WorkoutModel
 import com.example.finalproject_fittrack.utilities.Constants
-import com.google.common.reflect.TypeToken
-import com.google.gson.Gson
-
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.example.finalproject_fittrack.R
 
 object WorkoutManager {
 
-    private val workouts = mutableListOf<WorkoutModel>()
-    private var activeWorkout: WorkoutModel? = null
-    private lateinit var sharedPreferences: SharedPreferences
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.Firebase.USERS_REF)
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    fun init(context: Context) {
-        sharedPreferences = context.getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
-        loadWorkoutData()
-        loadFavoriteWorkouts()
+    private fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
     }
 
-    private fun loadWorkoutData() {
-        workouts.addAll(
-            listOf(
-                WorkoutModel.Builder()
-                    .name("Chest Workout")
-                    .description("Exercises to develop the chest muscles")
-                    .imageRes(R.drawable.chest)
-                    .category("Strength")
-                    .caloriesBurned(250)
-                    .duration(45)
-                    .build(),
+    fun loadWorkouts(category: String, onComplete: (List<WorkoutModel>) -> Unit) {
+        val userId = getCurrentUserId() ?: return
+        database.child(userId).child("workouts").orderByChild("category").equalTo(category)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val workouts = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                    onComplete(workouts)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete(emptyList())
+                }
+            })
+    }
 
-                WorkoutModel.Builder()
-                    .name("Back Workout")
-                    .description("Exercises to strengthen the back")
-                    .imageRes(R.drawable.back)
-                    .category("Strength")
-                    .caloriesBurned(200)
-                    .duration(40)
-                    .build(),
+    fun saveDefaultWorkouts() {
+        val userId = getCurrentUserId() ?: return
+        val defaultWorkouts = listOf(
+            WorkoutModel.Builder()
+                .name("Chest Workout")
+                .description("Exercises to develop the chest muscles")
+                .imageRes("chest")
+                .category("Strength")
+                .caloriesBurned(250)
+                .duration(45)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Shoulder Workout")
-                    .description("Exercises for stronger shoulders")
-                    .imageRes(R.drawable.shoulders)
-                    .category("Strength")
-                    .caloriesBurned(150)
-                    .duration(35)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Back Workout")
+                .description("Exercises to strengthen the back")
+                .imageRes("back")
+                .category("Strength")
+                .caloriesBurned(200)
+                .duration(40)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Leg Workout")
-                    .description("Exercises to strengthen the legs")
-                    .imageRes(R.drawable.legs)
-                    .category("Strength")
-                    .caloriesBurned(300)
-                    .duration(50)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Shoulder Workout")
+                .description("Exercises for stronger shoulders")
+                .imageRes("shoulders")
+                .category("Strength")
+                .caloriesBurned(150)
+                .duration(35)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Abs Workout")
-                    .description("Exercises to strengthen the core")
-                    .imageRes(R.drawable.abs)
-                    .category("Strength")
-                    .caloriesBurned(100)
-                    .duration(30)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Leg Workout")
+                .description("Exercises to strengthen the legs")
+                .imageRes("legs")
+                .category("Strength")
+                .caloriesBurned(300)
+                .duration(50)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Arms Workout")
-                    .description("Exercises for biceps and triceps")
-                    .imageRes(R.drawable.arms)
-                    .category("Strength")
-                    .caloriesBurned(150)
-                    .duration(30)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Abs Workout")
+                .description("Exercises to strengthen the core")
+                .imageRes("abs")
+                .category("Strength")
+                .caloriesBurned(100)
+                .duration(30)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Jump Rope")
-                    .description("High-intensity cardio workout")
-                    .imageRes(R.drawable.jump_rope)
-                    .category("Cardio")
-                    .caloriesBurned(200)
-                    .duration(20)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Arms Workout")
+                .description("Exercises for biceps and triceps")
+                .imageRes("arms")
+                .category("Strength")
+                .caloriesBurned(150)
+                .duration(30)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Spinning")
-                    .description("Indoor cycling exercise")
-                    .imageRes(R.drawable.spinning)
-                    .category("Cardio")
-                    .caloriesBurned(300)
-                    .duration(40)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Jump Rope")
+                .description("High-intensity cardio workout")
+                .imageRes("jump_rope")
+                .category("Cardio")
+                .caloriesBurned(200)
+                .duration(20)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Ski Machine")
-                    .description("Simulated skiing exercise")
-                    .imageRes(R.drawable.ski)
-                    .category("Cardio")
-                    .caloriesBurned(250)
-                    .duration(35)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Spinning")
+                .description("Indoor cycling exercise")
+                .imageRes("spinning")
+                .category("Cardio")
+                .caloriesBurned(300)
+                .duration(40)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Running")
-                    .description("Cardiovascular endurance training")
-                    .imageRes(R.drawable.running)
-                    .category("Cardio")
-                    .caloriesBurned(400)
-                    .duration(60)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Ski Machine")
+                .description("Simulated skiing exercise")
+                .imageRes("ski")
+                .category("Cardio")
+                .caloriesBurned(250)
+                .duration(35)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Escalate")
-                    .description("Simulated stair climbing")
-                    .imageRes(R.drawable.escalate)
-                    .category("Cardio")
-                    .caloriesBurned(350)
-                    .duration(45)
-                    .build(),
+            WorkoutModel.Builder()
+                .name("Running")
+                .description("Cardiovascular endurance training")
+                .imageRes("running")
+                .category("Cardio")
+                .caloriesBurned(400)
+                .duration(60)
+                .build(),
 
-                WorkoutModel.Builder()
-                    .name("Rowing")
-                    .description("Full-body workout using a rowing machine")
-                    .imageRes(R.drawable.rowing)
-                    .category("Cardio")
-                    .caloriesBurned(300)
-                    .duration(40)
-                    .build()
-            )
+            WorkoutModel.Builder()
+                .name("Escalate")
+                .description("Simulated stair climbing")
+                .imageRes("escalate")
+                .category("Cardio")
+                .caloriesBurned(350)
+                .duration(45)
+                .build(),
+
+            WorkoutModel.Builder()
+                .name("Rowing")
+                .description("Full-body workout using a rowing machine")
+                .imageRes("rowing")
+                .category("Cardio")
+                .caloriesBurned(300)
+                .duration(40)
+                .build()
         )
+
+        database.child(userId).child("workouts").setValue(defaultWorkouts)
     }
 
-    fun getWorkoutsByCategory(category: String): List<WorkoutModel> =
-        workouts.filter { it.category == category }
+    private fun saveFavoriteWorkouts(favorites: List<WorkoutModel>) {
+        val userId = getCurrentUserId() ?: return
+        database.child(userId).child("favorite_workouts").setValue(favorites)
+    }
 
+    fun loadFavoriteWorkouts(onComplete: (List<WorkoutModel>) -> Unit) {
+        val userId = getCurrentUserId() ?: return
+        database.child(userId).child("favorite_workouts")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val favorites = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                    onComplete(favorites)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete(emptyList())
+                }
+            })
+    }
 
-    fun getFavoriteWorkouts(): List<WorkoutModel> = workouts.filter { it.isFavorite }
-
-    fun updateFavoriteStatus(workout: WorkoutModel) {
+    fun updateFavoriteStatus(workout: WorkoutModel, onComplete: () -> Unit) {
+        val userId = getCurrentUserId() ?: return
         workout.isFavorite = !workout.isFavorite
-        saveFavoriteWorkouts()
-    }
 
-    private fun saveFavoriteWorkouts() {
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(getFavoriteWorkouts())
-        editor.putString(Constants.SharedPrefs.FAVORITE_WORKOUTS, json)
-        editor.apply()
-    }
+        database.child(userId).child("favorite_workouts")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val favorites = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }.toMutableList()
 
-    private fun loadFavoriteWorkouts() {
-        val gson = Gson()
-        val json = sharedPreferences.getString(Constants.SharedPrefs.FAVORITE_WORKOUTS, null)
-        val type = object : TypeToken<List<WorkoutModel>>() {}.type
-        val savedFavorites: List<WorkoutModel>? = gson.fromJson(json, type)
+                    if (workout.isFavorite) {
+                        favorites.add(workout)
+                    } else {
+                        favorites.removeAll { it.name == workout.name }
+                    }
 
-        if (savedFavorites != null) {
-            for (savedWorkout in savedFavorites) {
-                workouts.find { it.name == savedWorkout.name }?.isFavorite = true
-            }
-        }
+                    database.child(userId).child("favorite_workouts").setValue(favorites)
+                        .addOnCompleteListener { onComplete() }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete()
+                }
+            })
     }
 
     fun setActiveWorkout(workout: WorkoutModel) {
-        activeWorkout = workout
+        val userId = getCurrentUserId() ?: return
         workout.isInProgress = true
+        database.child(userId).child("active_workout").setValue(workout)
+    }
+
+    fun getActiveWorkout(onComplete: (WorkoutModel?) -> Unit) {
+        val userId = getCurrentUserId() ?: return
+        database.child(userId).child("active_workout")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val workout = snapshot.getValue(WorkoutModel::class.java)
+                    onComplete(workout)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete(null)
+                }
+            })
     }
 
     fun completeWorkout(workout: WorkoutModel, caloriesBurned: Int) {
-        activeWorkout = null
+        val userId = getCurrentUserId() ?: return
         workout.isInProgress = false
 
-        val totalCaloriesBurned = sharedPreferences.getInt(Constants.SharedPrefs.CALORIES_BURNED, 0) + caloriesBurned
-        sharedPreferences.edit().putInt(Constants.SharedPrefs.CALORIES_BURNED, totalCaloriesBurned).apply()
+        val workoutData = workout.copy(caloriesBurned = caloriesBurned)
+        database.child(userId).child("workout_history").push().setValue(workoutData)
+
+        val userRef = database.child(userId)
+        userRef.child("calories_burned").get().addOnSuccessListener { snapshot ->
+            val currentCalories = snapshot.getValue(Int::class.java) ?: 0
+            val updatedCalories = currentCalories + caloriesBurned
+            userRef.child("calories_burned").setValue(updatedCalories)
+        }
+
+        database.child(userId).child("active_workout").removeValue()
     }
 
-    fun isWorkoutActive(): Boolean = activeWorkout != null
+    fun isWorkoutActive(onComplete: (Boolean) -> Unit) {
+        val userId = getCurrentUserId() ?: return
+        database.child(userId).child("active_workout")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val isActive = snapshot.exists() && snapshot.getValue(WorkoutModel::class.java) != null
+                    onComplete(isActive)
+                }
 
-    fun getActiveWorkout(): WorkoutModel? = activeWorkout
-
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete(false)
+                }
+            })
+    }
 }

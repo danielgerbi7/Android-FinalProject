@@ -1,5 +1,6 @@
 package com.example.finalproject_fittrack.ui.home
 
+import WorkoutModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
@@ -16,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalproject_fittrack.R
 import com.example.finalproject_fittrack.databinding.FragmentHomeBinding
 import com.example.finalproject_fittrack.logic.WorkoutManager
-import com.example.finalproject_fittrack.models.WorkoutModel
 import com.example.finalproject_fittrack.adapter.WorkoutAdapter
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
@@ -64,8 +64,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadUserProfile() {
-        val userName = ProfileManager.getInstance().getUserName()
-        "Welcome, $userName!".also { binding.FHLBLWelcome.text = it }
+        ProfileManager.getInstance().getProfile { profileData ->
+            if (profileData != null) {
+                val name = profileData["name"] as? String ?: "User"
+                "Welcome, $name!".also { binding.FHLBLWelcome.text = it }
+            }
+        }
     }
 
 
@@ -83,8 +87,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setupFavoritesRecyclerView() {
-        favoriteWorkouts = WorkoutManager.getFavoriteWorkouts().toMutableList()
+        favoriteWorkouts = mutableListOf()
         favoriteAdapter = WorkoutAdapter(
             favoriteWorkouts,
             object : WorkoutFavoriteCallback {
@@ -106,6 +111,11 @@ class HomeFragment : Fragment() {
             adapter = favoriteAdapter
             setHasFixedSize(true)
         }
+        WorkoutManager.loadFavoriteWorkouts { favorites ->
+            favoriteWorkouts.clear()
+            favoriteWorkouts.addAll(favorites)
+            favoriteAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun checkDailyGoalAfterLogin() {
@@ -115,27 +125,26 @@ class HomeFragment : Fragment() {
         if (lastLoginDate != todayDate) {
             askUserForDailyGoal()
             sharedPreferences.edit().putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate).apply()
-            if (!isUserProfileComplete()) {
-                findNavController().navigate(R.id.navigation_profile)
+
+            ProfileManager.getInstance().isProfileComplete { isComplete ->
+                if (!isComplete) {
+                    findNavController().navigate(R.id.navigation_profile)
+                }
             }
         }
     }
 
-    private fun isUserProfileComplete(): Boolean {
-        val name = sharedPreferences.getString("user_name", "").orEmpty()
-        val age = sharedPreferences.getInt("user_age", 0)
-        val height = sharedPreferences.getFloat("user_height", 0f)
-        val weight = sharedPreferences.getFloat("user_weight", 0f)
-
-        return name.isNotEmpty() && age > 0 && height > 0f && weight > 0f
-    }
-
     private fun updateProgressBar() {
-        val progress = if (dailyGoal > 0) (currentCaloriesBurned * 100 / dailyGoal) else 0
-        binding.FHPRDailyGoal.progress = progress
-        "$progress% of daily goal achieved!".also { binding.FHLBLGoalStatus.text = it }
-        "Calories Burned: $currentCaloriesBurned kcal".also {
-            binding.FHLBLCaloriesBurned.text = it
+        ProfileManager.getInstance().getProfile { profileData ->
+            if (profileData != null) {
+                val currentCaloriesBurned = (profileData["calories_burned"] as? Long)?.toInt() ?: 0
+                val dailyGoal = (profileData["daily_goal"] as? Long)?.toInt() ?: 500
+
+                val progress = if (dailyGoal > 0) (currentCaloriesBurned * 100 / dailyGoal) else 0
+                binding.FHPRDailyGoal.progress = progress
+                "$progress% of daily goal achieved!".also { binding.FHLBLGoalStatus.text = it }
+                "Calories Burned: $currentCaloriesBurned kcal".also { binding.FHLBLCaloriesBurned.text = it }
+            }
         }
     }
 
@@ -166,14 +175,17 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateFavorites() {
-        favoriteWorkouts.clear()
-        favoriteWorkouts.addAll(WorkoutManager.getFavoriteWorkouts())
-        favoriteAdapter.notifyDataSetChanged()
+        WorkoutManager.loadFavoriteWorkouts { favorites ->
+            favoriteWorkouts.clear()
+            favoriteWorkouts.addAll(favorites)
+            favoriteAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun toggleFavorite(workout: WorkoutModel, position: Int) {
-        WorkoutManager.updateFavoriteStatus(workout)
-        updateFavorites()
+        WorkoutManager.updateFavoriteStatus(workout) {
+            updateFavorites()
+        }
     }
 
     private fun getTodayDate(): String {

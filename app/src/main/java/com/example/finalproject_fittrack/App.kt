@@ -19,6 +19,6 @@ class App : Application() {
         instance = this
 
         ProfileManager.init(this)
-        WorkoutManager.init(this)
-    }
+        //WorkoutManager.init(this)
+        ProfileManager.getInstance().checkAndSaveDefaultWorkouts()    }
 }

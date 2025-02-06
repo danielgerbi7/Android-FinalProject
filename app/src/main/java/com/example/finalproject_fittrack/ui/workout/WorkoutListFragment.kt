@@ -1,5 +1,6 @@
 package com.example.finalproject_fittrack.ui.workout
 
+import WorkoutModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,15 +14,13 @@ import com.example.finalproject_fittrack.databinding.FragmentWorkoutListBinding
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
 import com.example.finalproject_fittrack.logic.WorkoutManager
-import com.example.finalproject_fittrack.models.WorkoutModel
-
 class WorkoutListFragment : Fragment() {
 
     private var _binding: FragmentWorkoutListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var workoutAdapter: WorkoutAdapter
-    private lateinit var workoutList: MutableList<WorkoutModel>
+    private var workoutList: MutableList<WorkoutModel> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -29,8 +28,27 @@ class WorkoutListFragment : Fragment() {
         _binding = FragmentWorkoutListBinding.inflate(inflater, container, false)
 
         val category = arguments?.getString("category") ?: "Cardio"
-        workoutList = WorkoutManager.getWorkoutsByCategory(category).toMutableList()
 
+        loadWorkoutsFromDB(category)
+
+        return binding.root
+    }
+
+    private fun loadWorkoutsFromDB(category: String) {
+        WorkoutManager.loadWorkouts(category) { workouts ->
+            workoutList.clear()
+            workoutList.addAll(workouts)
+
+            WorkoutManager.loadFavoriteWorkouts { favorites ->
+                workoutList.forEach { workout ->
+                    workout.isFavorite = favorites.any { it.name == workout.name }
+                }
+                setupRecyclerView()
+            }
+        }
+    }
+
+    private fun setupRecyclerView() {
         workoutAdapter = WorkoutAdapter(
             workouts = workoutList,
             workoutFavoriteCallback = object : WorkoutFavoriteCallback {
@@ -50,19 +68,23 @@ class WorkoutListFragment : Fragment() {
             adapter = workoutAdapter
             setHasFixedSize(true)
         }
-        return binding.root
     }
 
     private fun toggleFavorite(workout: WorkoutModel, position: Int) {
-        WorkoutManager.updateFavoriteStatus(workout)
-        workoutAdapter.notifyItemChanged(position)
+        WorkoutManager.updateFavoriteStatus(workout) {
+            WorkoutManager.loadFavoriteWorkouts { favorites ->
+                workoutList.forEach { it.isFavorite = favorites.any { fav -> fav.name == it.name } }
+                workoutAdapter.notifyItemChanged(position)
+            }
+        }
     }
 
     private fun navigateToProgressScreen(workout: WorkoutModel) {
-        val bundle = Bundle()
-        bundle.putString("workout_name", workout.name)
-        bundle.putInt("workout_duration", workout.duration)
-        bundle.putInt("workout_calories", workout.caloriesBurned)
+        val bundle = Bundle().apply {
+            putString("workout_name", workout.name)
+            putInt("workout_duration", workout.duration)
+            putInt("workout_calories", workout.caloriesBurned)
+        }
 
         findNavController().navigate(R.id.navigation_progress, bundle)
     }

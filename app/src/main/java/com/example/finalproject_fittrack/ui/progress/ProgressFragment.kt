@@ -1,5 +1,6 @@
 package com.example.finalproject_fittrack.ui.progress
 
+import WorkoutModel
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,16 +11,15 @@ import androidx.fragment.app.Fragment
 import com.example.finalproject_fittrack.MainActivity
 import com.example.finalproject_fittrack.databinding.FragmentProgressBinding
 import com.example.finalproject_fittrack.logic.WorkoutManager
-import com.example.finalproject_fittrack.models.WorkoutModel
 
 class ProgressFragment : Fragment() {
 
     private var _binding: FragmentProgressBinding? = null
     private val binding get() = _binding!!
-
     private var workoutTimer: CountDownTimer? = null
     private var activeWorkout: WorkoutModel? = null
     private var startTimeMillis: Long = 0
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -34,11 +34,12 @@ class ProgressFragment : Fragment() {
     }
 
     private fun checkActiveWorkout() {
-        val workout = WorkoutManager.getActiveWorkout()
-        if (workout != null) {
-            startWorkout(workout)
-        } else {
-            defaultValues()
+        WorkoutManager.getActiveWorkout { workout ->
+            if (workout != null) {
+                startWorkout(workout)
+            } else {
+                defaultValues()
+            }
         }
     }
 

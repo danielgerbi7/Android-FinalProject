@@ -22,6 +22,7 @@ firebaseFirestoreKtx = "25.1.1"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-database = { module = "com.google.firebase:firebase-database" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

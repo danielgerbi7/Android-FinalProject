@@ -68,4 +68,7 @@ dependencies {
     //Gson
     implementation(libs.gson)
 
+    // Firebase RealTime Database:
+    implementation(libs.firebase.database)
+
 }

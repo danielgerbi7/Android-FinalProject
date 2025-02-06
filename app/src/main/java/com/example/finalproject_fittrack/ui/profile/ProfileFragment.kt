@@ -35,48 +35,36 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserProfile() {
-        val profileManager = ProfileManager.getInstance()
-        binding.profileEDITName.setText(profileManager.getUserName())
-        binding.profileEDITAge.setText(
-            String.format(
-                Locale.getDefault(),
-                "%d",
-                profileManager.getUserAge()
-            )
-        )
-        binding.profileEDITHeight.setText(
-            String.format(
-                Locale.getDefault(),
-                "%.1f",
-                profileManager.getUserHeight()
-            )
-        )
-        binding.profileEDITWeight.setText(
-            String.format(
-                Locale.getDefault(),
-                "%.1f",
-                profileManager.getUserWeight()
-            )
-        )
+        ProfileManager.getInstance().getProfile { profileData ->
+            if (profileData != null) {
+                binding.profileEDITName.setText(profileData["name"] as? String ?: "")
+                binding.profileEDITAge.setText((profileData["age"] as? Long)?.toString() ?: "0")
+                binding.profileEDITHeight.setText((profileData["height"] as? Long)?.toString() ?: "0.0")
+                binding.profileEDITWeight.setText((profileData["weight"] as? Long)?.toString() ?: "0.0")
 
-        val (bmi, status) = profileManager.calculateBMI()
-        "BMI: %.1f".format(bmi).also { binding.profileLBLBmi.text = it }
-        "Status: $status".also { binding.profileLBLBmiStatus.text = it }
+                ProfileManager.getInstance().calculateBMI { bmi, status ->
+                    binding.profileLBLBmi.text = String.format(Locale.getDefault(), "BMI: %.1f", bmi)
+                    "Status: $status".also { binding.profileLBLBmiStatus.text = it }
+                }
+            }
+        }
 
         enableEditing(false)
     }
 
     private fun saveProfile() {
-        ProfileManager.getInstance().saveProfile(
-            binding.profileEDITName.text.toString(),
-            binding.profileEDITAge.text.toString().toIntOrNull() ?: 0,
-            binding.profileEDITHeight.text.toString().toFloatOrNull() ?: 0f,
-            binding.profileEDITWeight.text.toString().toFloatOrNull() ?: 0f
-        )
-        requireActivity().supportFragmentManager
-            .setFragmentResult("update_home", Bundle())
+        val name = binding.profileEDITName.text.toString()
+        val age = binding.profileEDITAge.text.toString().toIntOrNull() ?: 0
+        val height = binding.profileEDITHeight.text.toString().toFloatOrNull() ?: 0f
+        val weight = binding.profileEDITWeight.text.toString().toFloatOrNull() ?: 0f
 
-        loadUserProfile()
+        ProfileManager.getInstance().saveProfile(name, age, height, weight) { success ->
+            if (success) {
+                requireActivity().supportFragmentManager
+                    .setFragmentResult("update_home", Bundle())
+                loadUserProfile()
+            }
+        }
     }
 
     private fun enableEditing(enabled: Boolean) {
