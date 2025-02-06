@@ -36,4 +36,10 @@
     <string name="bmi">BMI: —</string>
     <string name="status">Status: —</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="_750_kcal">750 kcal</string>
+    <string name="_1">1.</string>
+    <string name="david">David</string>
+    <string name="leaderboard_daily_calories">Leaderboard - Daily Calories</string>
+    <string name="you_are_currently_ranked">You are currently ranked #1</string>
 </resources>

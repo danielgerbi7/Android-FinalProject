@@ -127,9 +127,11 @@ object WorkoutRepository {
         userRef.child("workouts").orderByChild("category").equalTo(category)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val workouts = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                    val workouts =
+                        snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
                     onComplete(workouts)
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                     onComplete(emptyList())
                 }
@@ -141,9 +143,11 @@ object WorkoutRepository {
         FirebaseRepository.database.child(userId).child("favorite_workouts")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val favorites = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                    val favorites =
+                        snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
                     onComplete(favorites)
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                     onComplete(emptyList())
                 }
@@ -157,7 +161,9 @@ object WorkoutRepository {
         FirebaseRepository.database.child(userId).child("favorite_workouts")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val favorites = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }.toMutableList()
+                    val favorites =
+                        snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                            .toMutableList()
 
                     if (workout.isFavorite) {
                         favorites.add(workout)
@@ -165,7 +171,8 @@ object WorkoutRepository {
                         favorites.removeAll { it.name == workout.name }
                     }
 
-                    FirebaseRepository.database.child(userId).child("favorite_workouts").setValue(favorites)
+                    FirebaseRepository.database.child(userId).child("favorite_workouts")
+                        .setValue(favorites)
                         .addOnCompleteListener { onComplete() }
                 }
 
@@ -189,6 +196,7 @@ object WorkoutRepository {
                     val workout = snapshot.getValue(WorkoutModel::class.java)
                     onComplete(workout)
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                     onComplete(null)
                 }
@@ -200,7 +208,8 @@ object WorkoutRepository {
         workout.isInProgress = false
 
         val workoutData = workout.copy(caloriesBurned = caloriesBurned)
-        FirebaseRepository.database.child(userId).child("workout_history").push().setValue(workoutData)
+        FirebaseRepository.database.child(userId).child("workout_history").push()
+            .setValue(workoutData)
 
         ProfileRepository.DailyGoalManager.getDailyProgress { currentProgress ->
             val updatedCalories = currentProgress.caloriesBurned + caloriesBurned
@@ -230,7 +239,8 @@ object WorkoutRepository {
         FirebaseRepository.database.child(userId).child("active_workout")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val isActive = snapshot.exists() && snapshot.getValue(WorkoutModel::class.java) != null
+                    val isActive =
+                        snapshot.exists() && snapshot.getValue(WorkoutModel::class.java) != null
                     onComplete(isActive)
                 }
 

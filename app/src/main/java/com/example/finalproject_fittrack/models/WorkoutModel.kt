@@ -1,4 +1,5 @@
 package com.example.finalproject_fittrack.models
+
 import java.io.Serializable
 
 data class WorkoutModel(

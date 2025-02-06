@@ -26,7 +26,13 @@ class ProfileRepository private constructor() {
         }
     }
 
-    fun saveProfile(name: String, age: Int, height: Float, weight: Float, onComplete: (Boolean) -> Unit) {
+    fun saveProfile(
+        name: String,
+        age: Int,
+        height: Float,
+        weight: Float,
+        onComplete: (Boolean) -> Unit
+    ) {
         val userRef = getUserReference() ?: return
 
         userRef.get().addOnSuccessListener { snapshot ->
@@ -135,7 +141,8 @@ class ProfileRepository private constructor() {
             val userRef = getUserReference() ?: return
             userRef.get().addOnSuccessListener { snapshot ->
                 val goal = (snapshot.child("daily_goal").value as? Long)?.toInt() ?: DEFAULT_GOAL
-                val caloriesBurned = (snapshot.child("calories_burned").value as? Long)?.toInt() ?: 0
+                val caloriesBurned =
+                    (snapshot.child("calories_burned").value as? Long)?.toInt() ?: 0
                 val lastUpdateDate = snapshot.child("last_update_date").value as? String ?: ""
 
                 onComplete(DailyProgress(goal, caloriesBurned, lastUpdateDate))
@@ -145,9 +152,11 @@ class ProfileRepository private constructor() {
         }
 
         fun resetDailyProgress(context: Context, onComplete: (Boolean) -> Unit) {
-            val sharedPreferences = context.getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
+            val sharedPreferences =
+                context.getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
             val todayDate = DateDetails.getTodayDate()
-            val lastLoginDate = sharedPreferences.getString(Constants.SharedPrefs.LAST_LOGIN_DATE, "")
+            val lastLoginDate =
+                sharedPreferences.getString(Constants.SharedPrefs.LAST_LOGIN_DATE, "")
 
             if (lastLoginDate != todayDate) {
                 sharedPreferences.edit()
@@ -169,8 +178,6 @@ class ProfileRepository private constructor() {
             }
         }
     }
-
-
 
 
 }

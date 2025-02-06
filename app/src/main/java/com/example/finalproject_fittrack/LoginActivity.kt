@@ -105,7 +105,11 @@ class LoginActivity : AppCompatActivity() {
                                 redirectToMain()
                             }
                         } else {
-                            Toast.makeText(this, "Failed to save goal. Try again!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                "Failed to save goal. Try again!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             askUserForDailyGoal(isNewUser)
                         }
                     }

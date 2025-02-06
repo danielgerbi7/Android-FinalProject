@@ -9,17 +9,18 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalproject_fittrack.R
-import com.example.finalproject_fittrack.adapter.WorkoutAdapter
+import com.example.finalproject_fittrack.adapter.CategoryWorkoutAdapter
 import com.example.finalproject_fittrack.databinding.FragmentWorkoutListBinding
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
 import com.example.finalproject_fittrack.dataBase.WorkoutRepository
+
 class WorkoutListFragment : Fragment() {
 
     private var _binding: FragmentWorkoutListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var workoutAdapter: WorkoutAdapter
+    private lateinit var workoutAdapter: CategoryWorkoutAdapter
     private var workoutList: MutableList<WorkoutModel> = mutableListOf()
 
     override fun onCreateView(
@@ -49,7 +50,7 @@ class WorkoutListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        workoutAdapter = WorkoutAdapter(
+        workoutAdapter = CategoryWorkoutAdapter(
             workouts = workoutList,
             workoutFavoriteCallback = object : WorkoutFavoriteCallback {
                 override fun onFavoriteClicked(workout: WorkoutModel, position: Int) {

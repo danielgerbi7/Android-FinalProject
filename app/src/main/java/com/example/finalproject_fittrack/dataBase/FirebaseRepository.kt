@@ -8,7 +8,8 @@ import com.example.finalproject_fittrack.utilities.Constants
 object FirebaseRepository {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val database: DatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.Firebase.USERS_REF)
+    val database: DatabaseReference =
+        FirebaseDatabase.getInstance().getReference(Constants.Firebase.USERS_REF)
 
     fun getCurrentUserId(): String? {
         return auth.currentUser?.uid
@@ -17,5 +18,9 @@ object FirebaseRepository {
     fun getUserReference(): DatabaseReference? {
         val userId = getCurrentUserId() ?: return null
         return database.child(userId)
+    }
+
+    fun getCurrentUserName(): String? {
+        return auth.currentUser?.displayName
     }
 }

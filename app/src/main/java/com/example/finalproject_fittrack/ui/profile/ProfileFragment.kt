@@ -39,11 +39,16 @@ class ProfileFragment : Fragment() {
             if (profileData != null) {
                 binding.profileEDITName.setText(profileData["name"] as? String ?: "")
                 binding.profileEDITAge.setText((profileData["age"] as? Long)?.toString() ?: "0")
-                binding.profileEDITHeight.setText((profileData["height"] as? Long)?.toString() ?: "0.0")
-                binding.profileEDITWeight.setText((profileData["weight"] as? Long)?.toString() ?: "0.0")
+                binding.profileEDITHeight.setText(
+                    (profileData["height"] as? Long)?.toString() ?: "0.0"
+                )
+                binding.profileEDITWeight.setText(
+                    (profileData["weight"] as? Long)?.toString() ?: "0.0"
+                )
 
                 ProfileRepository.getInstance().calculateBMI { bmi, status ->
-                    binding.profileLBLBmi.text = String.format(Locale.getDefault(), "BMI: %.1f", bmi)
+                    binding.profileLBLBmi.text =
+                        String.format(Locale.getDefault(), "BMI: %.1f", bmi)
                     "Status: $status".also { binding.profileLBLBmiStatus.text = it }
                 }
             }

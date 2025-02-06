@@ -11,4 +11,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue_200">#64B5F6</color>
     <color name="heart_color">#EF5350</color>
+    <color name="dark_grey">#FFA9A9A9</color>
 </resources>

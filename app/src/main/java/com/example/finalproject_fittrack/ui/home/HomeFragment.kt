@@ -12,9 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalproject_fittrack.R
+import com.example.finalproject_fittrack.adapter.FavoriteWorkoutAdapter
 import com.example.finalproject_fittrack.databinding.FragmentHomeBinding
 import com.example.finalproject_fittrack.dataBase.WorkoutRepository
-import com.example.finalproject_fittrack.adapter.WorkoutAdapter
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
 import com.example.finalproject_fittrack.dataBase.ProfileRepository
@@ -25,9 +25,8 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var favoriteAdapter: WorkoutAdapter
     private var favoriteWorkouts: MutableList<WorkoutModel> = mutableListOf()
-
+    private lateinit var favoriteAdapter: FavoriteWorkoutAdapter
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
@@ -35,7 +34,10 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         sharedPreferences =
-            requireContext().getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(
+                Constants.SharedPrefs.PREFS_NAME,
+                Context.MODE_PRIVATE
+            )
 
         loadUserProfile()
 
@@ -61,17 +63,16 @@ class HomeFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun setupFavoritesRecyclerView() {
         favoriteWorkouts = mutableListOf()
-        favoriteAdapter = WorkoutAdapter(
+        favoriteAdapter = FavoriteWorkoutAdapter(
             favoriteWorkouts,
             object : WorkoutFavoriteCallback {
                 override fun onFavoriteClicked(workout: WorkoutModel, position: Int) {
-                    toggleFavorite(workout, position)
+                    toggleFavorite(workout)
                 }
             },
             object : WorkoutProgressCallback {
                 override fun onStartWorkout(workout: WorkoutModel, position: Int) {
-                    val navController = findNavController()
-                    navController.navigate(R.id.navigation_progress)
+                    findNavController().navigate(R.id.navigation_progress)
                 }
             }
         )
@@ -98,7 +99,9 @@ class HomeFragment : Fragment() {
             binding.apply {
                 FHPRDailyGoal.progress = progressPercentage
                 "$progressPercentage% of daily goal achieved!".also { FHLBLGoalStatus.text = it }
-                "Calories Burned: ${progress.caloriesBurned} kcal".also { FHLBLCaloriesBurned.text = it }
+                "Calories Burned: ${progress.caloriesBurned} kcal".also {
+                    FHLBLCaloriesBurned.text = it
+                }
             }
         }
     }
@@ -112,7 +115,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun toggleFavorite(workout: WorkoutModel, position: Int) {
+    private fun toggleFavorite(workout: WorkoutModel) {
         WorkoutRepository.updateFavoriteStatus(workout) {
             updateFavorites()
         }

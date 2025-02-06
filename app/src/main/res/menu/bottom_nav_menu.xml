@@ -21,4 +21,9 @@
         android:icon="@drawable/profile"
         android:title="@string/title_profile" />
 
+    <item
+        android:id="@+id/navigation_leaderboard"
+        android:icon="@drawable/winner"
+        android:title="@string/leaderboard" />
+
 </menu>
