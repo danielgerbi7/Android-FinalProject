@@ -1,6 +1,5 @@
 package com.example.finalproject_fittrack.adapter
 
-import WorkoutModel
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -9,7 +8,8 @@ import com.example.finalproject_fittrack.R
 import com.example.finalproject_fittrack.databinding.ItemWorkoutBinding
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
-import com.example.finalproject_fittrack.logic.WorkoutManager
+import com.example.finalproject_fittrack.dataBase.WorkoutRepository
+import com.example.finalproject_fittrack.models.WorkoutModel
 
 
 class WorkoutAdapter(
@@ -53,11 +53,11 @@ class WorkoutAdapter(
                 }
 
                 binding.workoutIMGStart.setOnClickListener {
-                    WorkoutManager.isWorkoutActive { isActive ->
+                    WorkoutRepository.isWorkoutActive { isActive ->
                         if (isActive) {
                             Toast.makeText(binding.root.context, "A workout is already in progress!", Toast.LENGTH_SHORT).show()
                         } else {
-                            WorkoutManager.setActiveWorkout(workout)
+                            WorkoutRepository.setActiveWorkout(workout)
                             workoutProgressCallback.onStartWorkout(getItem(adapterPosition), adapterPosition)
                         }
                     }

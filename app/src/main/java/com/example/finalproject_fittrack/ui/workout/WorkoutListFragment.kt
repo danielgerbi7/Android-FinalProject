@@ -1,6 +1,6 @@
 package com.example.finalproject_fittrack.ui.workout
 
-import WorkoutModel
+import com.example.finalproject_fittrack.models.WorkoutModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +13,7 @@ import com.example.finalproject_fittrack.adapter.WorkoutAdapter
 import com.example.finalproject_fittrack.databinding.FragmentWorkoutListBinding
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
-import com.example.finalproject_fittrack.logic.WorkoutManager
+import com.example.finalproject_fittrack.dataBase.WorkoutRepository
 class WorkoutListFragment : Fragment() {
 
     private var _binding: FragmentWorkoutListBinding? = null
@@ -35,11 +35,11 @@ class WorkoutListFragment : Fragment() {
     }
 
     private fun loadWorkoutsFromDB(category: String) {
-        WorkoutManager.loadWorkouts(category) { workouts ->
+        WorkoutRepository.loadWorkouts(category) { workouts ->
             workoutList.clear()
             workoutList.addAll(workouts)
 
-            WorkoutManager.loadFavoriteWorkouts { favorites ->
+            WorkoutRepository.loadFavoriteWorkouts { favorites ->
                 workoutList.forEach { workout ->
                     workout.isFavorite = favorites.any { it.name == workout.name }
                 }
@@ -71,8 +71,8 @@ class WorkoutListFragment : Fragment() {
     }
 
     private fun toggleFavorite(workout: WorkoutModel, position: Int) {
-        WorkoutManager.updateFavoriteStatus(workout) {
-            WorkoutManager.loadFavoriteWorkouts { favorites ->
+        WorkoutRepository.updateFavoriteStatus(workout) {
+            WorkoutRepository.loadFavoriteWorkouts { favorites ->
                 workoutList.forEach { it.isFavorite = favorites.any { fav -> fav.name == it.name } }
                 workoutAdapter.notifyItemChanged(position)
             }

@@ -1,6 +1,6 @@
 package com.example.finalproject_fittrack.ui.progress
 
-import WorkoutModel
+import com.example.finalproject_fittrack.models.WorkoutModel
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.finalproject_fittrack.MainActivity
 import com.example.finalproject_fittrack.databinding.FragmentProgressBinding
-import com.example.finalproject_fittrack.logic.WorkoutManager
+import com.example.finalproject_fittrack.dataBase.WorkoutRepository
 
 class ProgressFragment : Fragment() {
 
@@ -34,7 +34,7 @@ class ProgressFragment : Fragment() {
     }
 
     private fun checkActiveWorkout() {
-        WorkoutManager.getActiveWorkout { workout ->
+        WorkoutRepository.getActiveWorkout { workout ->
             if (workout != null) {
                 startWorkout(workout)
             } else {
@@ -75,7 +75,7 @@ class ProgressFragment : Fragment() {
     private fun completeWorkout() {
         activeWorkout?.let { workout ->
             val caloriesBurned = calculateCaloriesBurned(workout)
-            WorkoutManager.completeWorkout(workout, caloriesBurned)
+            WorkoutRepository.completeWorkout(workout, caloriesBurned)
             Toast.makeText(
                 requireContext(),
                 "Workout complete! You burned $caloriesBurned kcal.",
@@ -95,7 +95,7 @@ class ProgressFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
 
-            WorkoutManager.completeWorkout(workout, caloriesBurned)
+            WorkoutRepository.completeWorkout(workout, caloriesBurned)
         }
         resetUI()
     }

@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.finalproject_fittrack.databinding.ActivityProfileSetupBinding
-import com.example.finalproject_fittrack.logic.ProfileManager
+import com.example.finalproject_fittrack.dataBase.ProfileRepository
 
 class ProfileSetupActivity : AppCompatActivity() {
 
@@ -27,12 +27,13 @@ class ProfileSetupActivity : AppCompatActivity() {
         val height = binding.profileEDITHeight.text.toString().toFloatOrNull() ?: 0f
         val weight = binding.profileEDITWeight.text.toString().toFloatOrNull() ?: 0f
 
+
         if (name.isBlank() || age == 0 || height == 0f || weight == 0f) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
-        ProfileManager.getInstance().saveProfile(name, age, height, weight) { success ->
+        ProfileRepository.getInstance().saveProfile(name, age, height, weight) { success ->
             if (success) {
                 Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)

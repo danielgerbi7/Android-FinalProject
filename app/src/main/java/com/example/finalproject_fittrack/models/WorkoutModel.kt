@@ -1,3 +1,4 @@
+package com.example.finalproject_fittrack.models
 import java.io.Serializable
 
 data class WorkoutModel(
@@ -10,8 +11,6 @@ data class WorkoutModel(
     var isFavorite: Boolean = false,
     var isInProgress: Boolean = false
 ) : Serializable {
-
-    constructor() : this("", "", "", "", 0, 0, false, false)
 
     fun getImageResAsString(): String {
         return if (imageRes is Long) {
@@ -37,8 +36,6 @@ data class WorkoutModel(
         fun category(category: String) = apply { this.category = category }
         fun caloriesBurned(caloriesBurned: Int) = apply { this.caloriesBurned = caloriesBurned }
         fun duration(duration: Int) = apply { this.duration = duration }
-        fun isFavorite(isFavorite: Boolean) = apply { this.isFavorite = isFavorite }
-        fun isInProgress(isInProgress: Boolean) = apply { this.isInProgress = isInProgress }
 
         fun build() = WorkoutModel(
             name,

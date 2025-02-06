@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.finalproject_fittrack.databinding.FragmentProfileBinding
-import com.example.finalproject_fittrack.logic.ProfileManager
+import com.example.finalproject_fittrack.dataBase.ProfileRepository
 import java.util.Locale
 
 class ProfileFragment : Fragment() {
@@ -35,14 +35,14 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserProfile() {
-        ProfileManager.getInstance().getProfile { profileData ->
+        ProfileRepository.getInstance().getProfile { profileData ->
             if (profileData != null) {
                 binding.profileEDITName.setText(profileData["name"] as? String ?: "")
                 binding.profileEDITAge.setText((profileData["age"] as? Long)?.toString() ?: "0")
                 binding.profileEDITHeight.setText((profileData["height"] as? Long)?.toString() ?: "0.0")
                 binding.profileEDITWeight.setText((profileData["weight"] as? Long)?.toString() ?: "0.0")
 
-                ProfileManager.getInstance().calculateBMI { bmi, status ->
+                ProfileRepository.getInstance().calculateBMI { bmi, status ->
                     binding.profileLBLBmi.text = String.format(Locale.getDefault(), "BMI: %.1f", bmi)
                     "Status: $status".also { binding.profileLBLBmiStatus.text = it }
                 }
@@ -58,7 +58,7 @@ class ProfileFragment : Fragment() {
         val height = binding.profileEDITHeight.text.toString().toFloatOrNull() ?: 0f
         val weight = binding.profileEDITWeight.text.toString().toFloatOrNull() ?: 0f
 
-        ProfileManager.getInstance().saveProfile(name, age, height, weight) { success ->
+        ProfileRepository.getInstance().saveProfile(name, age, height, weight) { success ->
             if (success) {
                 requireActivity().supportFragmentManager
                     .setFragmentResult("update_home", Bundle())

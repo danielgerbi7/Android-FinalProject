@@ -1,6 +1,7 @@
 package com.example.finalproject_fittrack.interfaces
 
-import WorkoutModel
+import com.example.finalproject_fittrack.models.WorkoutModel
+
 
 
 interface WorkoutFavoriteCallback {

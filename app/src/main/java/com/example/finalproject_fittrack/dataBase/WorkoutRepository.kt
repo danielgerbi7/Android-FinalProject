@@ -1,33 +1,11 @@
-package com.example.finalproject_fittrack.logic
+package com.example.finalproject_fittrack.dataBase
 
-import WorkoutModel
-import com.example.finalproject_fittrack.utilities.Constants
-import com.google.firebase.auth.FirebaseAuth
+import com.example.finalproject_fittrack.dataBase.FirebaseRepository.getCurrentUserId
+import com.example.finalproject_fittrack.dataBase.FirebaseRepository.getUserReference
 import com.google.firebase.database.*
-import com.example.finalproject_fittrack.R
+import com.example.finalproject_fittrack.models.WorkoutModel
 
-object WorkoutManager {
-
-    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.Firebase.USERS_REF)
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
-    private fun getCurrentUserId(): String? {
-        return auth.currentUser?.uid
-    }
-
-    fun loadWorkouts(category: String, onComplete: (List<WorkoutModel>) -> Unit) {
-        val userId = getCurrentUserId() ?: return
-        database.child(userId).child("workouts").orderByChild("category").equalTo(category)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val workouts = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
-                    onComplete(workouts)
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    onComplete(emptyList())
-                }
-            })
-    }
+object WorkoutRepository {
 
     fun saveDefaultWorkouts() {
         val userId = getCurrentUserId() ?: return
@@ -141,17 +119,26 @@ object WorkoutManager {
                 .build()
         )
 
-        database.child(userId).child("workouts").setValue(defaultWorkouts)
+        FirebaseRepository.database.child(userId).child("workouts").setValue(defaultWorkouts)
     }
 
-    private fun saveFavoriteWorkouts(favorites: List<WorkoutModel>) {
-        val userId = getCurrentUserId() ?: return
-        database.child(userId).child("favorite_workouts").setValue(favorites)
+    fun loadWorkouts(category: String, onComplete: (List<WorkoutModel>) -> Unit) {
+        val userRef = getUserReference() ?: return
+        userRef.child("workouts").orderByChild("category").equalTo(category)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val workouts = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                    onComplete(workouts)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete(emptyList())
+                }
+            })
     }
 
     fun loadFavoriteWorkouts(onComplete: (List<WorkoutModel>) -> Unit) {
         val userId = getCurrentUserId() ?: return
-        database.child(userId).child("favorite_workouts")
+        FirebaseRepository.database.child(userId).child("favorite_workouts")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val favorites = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
@@ -167,7 +154,7 @@ object WorkoutManager {
         val userId = getCurrentUserId() ?: return
         workout.isFavorite = !workout.isFavorite
 
-        database.child(userId).child("favorite_workouts")
+        FirebaseRepository.database.child(userId).child("favorite_workouts")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val favorites = snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }.toMutableList()
@@ -178,7 +165,7 @@ object WorkoutManager {
                         favorites.removeAll { it.name == workout.name }
                     }
 
-                    database.child(userId).child("favorite_workouts").setValue(favorites)
+                    FirebaseRepository.database.child(userId).child("favorite_workouts").setValue(favorites)
                         .addOnCompleteListener { onComplete() }
                 }
 
@@ -191,12 +178,12 @@ object WorkoutManager {
     fun setActiveWorkout(workout: WorkoutModel) {
         val userId = getCurrentUserId() ?: return
         workout.isInProgress = true
-        database.child(userId).child("active_workout").setValue(workout)
+        FirebaseRepository.database.child(userId).child("active_workout").setValue(workout)
     }
 
     fun getActiveWorkout(onComplete: (WorkoutModel?) -> Unit) {
         val userId = getCurrentUserId() ?: return
-        database.child(userId).child("active_workout")
+        FirebaseRepository.database.child(userId).child("active_workout")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val workout = snapshot.getValue(WorkoutModel::class.java)
@@ -213,21 +200,34 @@ object WorkoutManager {
         workout.isInProgress = false
 
         val workoutData = workout.copy(caloriesBurned = caloriesBurned)
-        database.child(userId).child("workout_history").push().setValue(workoutData)
+        FirebaseRepository.database.child(userId).child("workout_history").push().setValue(workoutData)
 
-        val userRef = database.child(userId)
-        userRef.child("calories_burned").get().addOnSuccessListener { snapshot ->
-            val currentCalories = snapshot.getValue(Int::class.java) ?: 0
-            val updatedCalories = currentCalories + caloriesBurned
-            userRef.child("calories_burned").setValue(updatedCalories)
+        ProfileRepository.DailyGoalManager.getDailyProgress { currentProgress ->
+            val updatedCalories = currentProgress.caloriesBurned + caloriesBurned
+            ProfileRepository.DailyGoalManager.updateCaloriesBurned(updatedCalories) { _ -> }
         }
 
-        database.child(userId).child("active_workout").removeValue()
+        FirebaseRepository.database.child(userId).child("active_workout").removeValue()
+    }
+
+    fun checkAndSaveDefaultWorkouts() {
+        val userRef = getUserReference() ?: return
+        userRef.child("workouts")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        saveDefaultWorkouts()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
     }
 
     fun isWorkoutActive(onComplete: (Boolean) -> Unit) {
         val userId = getCurrentUserId() ?: return
-        database.child(userId).child("active_workout")
+        FirebaseRepository.database.child(userId).child("active_workout")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val isActive = snapshot.exists() && snapshot.getValue(WorkoutModel::class.java) != null
