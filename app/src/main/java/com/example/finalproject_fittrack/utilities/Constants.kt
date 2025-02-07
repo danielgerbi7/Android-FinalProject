@@ -3,7 +3,7 @@ package com.example.finalproject_fittrack.utilities
 
 class Constants {
 
-    object defaultNutritionValues {
+    object DefaultNutrition {
         const val DEFAULT_GOAL = 500
     }
 

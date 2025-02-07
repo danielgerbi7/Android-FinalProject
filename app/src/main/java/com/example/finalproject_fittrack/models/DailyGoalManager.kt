@@ -2,7 +2,7 @@ package com.example.finalproject_fittrack.models
 import android.content.Context
 import com.example.finalproject_fittrack.dataBase.FirebaseRepository.getUserReference
 import com.example.finalproject_fittrack.utilities.Constants
-import com.example.finalproject_fittrack.utilities.Constants.DefaultNutritionValues.DEFAULT_GOAL
+import com.example.finalproject_fittrack.utilities.Constants.DefaultNutrition.DEFAULT_GOAL
 import com.example.finalproject_fittrack.utilities.DateDetails
 
 object DailyGoalManager {
