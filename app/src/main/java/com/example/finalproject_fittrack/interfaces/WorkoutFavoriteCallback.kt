@@ -1,9 +1,9 @@
 package com.example.finalproject_fittrack.interfaces
 
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 
 
 
 interface WorkoutFavoriteCallback {
-    fun onFavoriteClicked(workout: WorkoutModel, position: Int)
+    fun onFavoriteClicked(workout: Workout, position: Int)
 }

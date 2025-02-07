@@ -4,10 +4,10 @@ import android.widget.Toast
 import com.example.finalproject_fittrack.dataBase.WorkoutRepository
 import com.example.finalproject_fittrack.interfaces.WorkoutFavoriteCallback
 import com.example.finalproject_fittrack.interfaces.WorkoutProgressCallback
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 
 class FavoriteWorkoutAdapter(
-    workouts: MutableList<WorkoutModel>,
+    workouts: MutableList<Workout>,
     private val workoutFavoriteCallback: WorkoutFavoriteCallback,
     private val workoutProgressCallback: WorkoutProgressCallback
 ) : BaseWorkoutAdapter(workouts) {

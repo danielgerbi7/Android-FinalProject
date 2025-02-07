@@ -2,15 +2,16 @@ package com.example.finalproject_fittrack.dataBase
 
 import com.example.finalproject_fittrack.dataBase.FirebaseRepository.getCurrentUserId
 import com.example.finalproject_fittrack.dataBase.FirebaseRepository.getUserReference
+import com.example.finalproject_fittrack.models.DailyGoalManager
 import com.google.firebase.database.*
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 
 object WorkoutRepository {
 
     fun saveDefaultWorkouts() {
         val userId = getCurrentUserId() ?: return
         val defaultWorkouts = listOf(
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Chest Workout")
                 .description("Exercises to develop the chest muscles")
                 .imageRes("chest")
@@ -19,7 +20,7 @@ object WorkoutRepository {
                 .duration(45)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Back Workout")
                 .description("Exercises to strengthen the back")
                 .imageRes("back")
@@ -28,7 +29,7 @@ object WorkoutRepository {
                 .duration(40)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Shoulder Workout")
                 .description("Exercises for stronger shoulders")
                 .imageRes("shoulders")
@@ -37,7 +38,7 @@ object WorkoutRepository {
                 .duration(35)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Leg Workout")
                 .description("Exercises to strengthen the legs")
                 .imageRes("legs")
@@ -46,7 +47,7 @@ object WorkoutRepository {
                 .duration(50)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Abs Workout")
                 .description("Exercises to strengthen the core")
                 .imageRes("abs")
@@ -55,7 +56,7 @@ object WorkoutRepository {
                 .duration(30)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Arms Workout")
                 .description("Exercises for biceps and triceps")
                 .imageRes("arms")
@@ -64,7 +65,7 @@ object WorkoutRepository {
                 .duration(30)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Jump Rope")
                 .description("High-intensity cardio workout")
                 .imageRes("jump_rope")
@@ -73,7 +74,7 @@ object WorkoutRepository {
                 .duration(20)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Spinning")
                 .description("Indoor cycling exercise")
                 .imageRes("spinning")
@@ -82,7 +83,7 @@ object WorkoutRepository {
                 .duration(40)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Ski Machine")
                 .description("Simulated skiing exercise")
                 .imageRes("ski")
@@ -91,7 +92,7 @@ object WorkoutRepository {
                 .duration(35)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Running")
                 .description("Cardiovascular endurance training")
                 .imageRes("running")
@@ -100,7 +101,7 @@ object WorkoutRepository {
                 .duration(60)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Escalate")
                 .description("Simulated stair climbing")
                 .imageRes("escalate")
@@ -109,7 +110,7 @@ object WorkoutRepository {
                 .duration(45)
                 .build(),
 
-            WorkoutModel.Builder()
+            Workout.Builder()
                 .name("Rowing")
                 .description("Full-body workout using a rowing machine")
                 .imageRes("rowing")
@@ -122,13 +123,13 @@ object WorkoutRepository {
         FirebaseRepository.database.child(userId).child("workouts").setValue(defaultWorkouts)
     }
 
-    fun loadWorkouts(category: String, onComplete: (List<WorkoutModel>) -> Unit) {
+    fun loadWorkouts(category: String, onComplete: (List<Workout>) -> Unit) {
         val userRef = getUserReference() ?: return
         userRef.child("workouts").orderByChild("category").equalTo(category)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val workouts =
-                        snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                        snapshot.children.mapNotNull { it.getValue(Workout::class.java) }
                     onComplete(workouts)
                 }
 
@@ -138,13 +139,13 @@ object WorkoutRepository {
             })
     }
 
-    fun loadFavoriteWorkouts(onComplete: (List<WorkoutModel>) -> Unit) {
+    fun loadFavoriteWorkouts(onComplete: (List<Workout>) -> Unit) {
         val userId = getCurrentUserId() ?: return
         FirebaseRepository.database.child(userId).child("favorite_workouts")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val favorites =
-                        snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                        snapshot.children.mapNotNull { it.getValue(Workout::class.java) }
                     onComplete(favorites)
                 }
 
@@ -154,7 +155,7 @@ object WorkoutRepository {
             })
     }
 
-    fun updateFavoriteStatus(workout: WorkoutModel, onComplete: () -> Unit) {
+    fun updateFavoriteStatus(workout: Workout, onComplete: () -> Unit) {
         val userId = getCurrentUserId() ?: return
         workout.isFavorite = !workout.isFavorite
 
@@ -162,7 +163,7 @@ object WorkoutRepository {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val favorites =
-                        snapshot.children.mapNotNull { it.getValue(WorkoutModel::class.java) }
+                        snapshot.children.mapNotNull { it.getValue(Workout::class.java) }
                             .toMutableList()
 
                     if (workout.isFavorite) {
@@ -182,18 +183,18 @@ object WorkoutRepository {
             })
     }
 
-    fun setActiveWorkout(workout: WorkoutModel) {
+    fun setActiveWorkout(workout: Workout) {
         val userId = getCurrentUserId() ?: return
         workout.isInProgress = true
         FirebaseRepository.database.child(userId).child("active_workout").setValue(workout)
     }
 
-    fun getActiveWorkout(onComplete: (WorkoutModel?) -> Unit) {
+    fun getActiveWorkout(onComplete: (Workout?) -> Unit) {
         val userId = getCurrentUserId() ?: return
         FirebaseRepository.database.child(userId).child("active_workout")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val workout = snapshot.getValue(WorkoutModel::class.java)
+                    val workout = snapshot.getValue(Workout::class.java)
                     onComplete(workout)
                 }
 
@@ -203,7 +204,7 @@ object WorkoutRepository {
             })
     }
 
-    fun completeWorkout(workout: WorkoutModel, caloriesBurned: Int) {
+    fun completeWorkout(workout: Workout, caloriesBurned: Int) {
         val userId = getCurrentUserId() ?: return
         workout.isInProgress = false
 
@@ -211,9 +212,9 @@ object WorkoutRepository {
         FirebaseRepository.database.child(userId).child("workout_history").push()
             .setValue(workoutData)
 
-        ProfileRepository.DailyGoalManager.getDailyProgress { currentProgress ->
+            DailyGoalManager.getDailyProgress { currentProgress ->
             val updatedCalories = currentProgress.caloriesBurned + caloriesBurned
-            ProfileRepository.DailyGoalManager.updateCaloriesBurned(updatedCalories) { _ -> }
+            DailyGoalManager.updateCaloriesBurned(updatedCalories) { _ -> }
         }
 
         FirebaseRepository.database.child(userId).child("active_workout").removeValue()
@@ -240,7 +241,7 @@ object WorkoutRepository {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val isActive =
-                        snapshot.exists() && snapshot.getValue(WorkoutModel::class.java) != null
+                        snapshot.exists() && snapshot.getValue(Workout::class.java) != null
                     onComplete(isActive)
                 }
 

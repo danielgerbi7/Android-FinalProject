@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.finalproject_fittrack.databinding.FragmentProfileBinding
 import com.example.finalproject_fittrack.dataBase.ProfileRepository
+import com.example.finalproject_fittrack.models.Profile
 import java.util.Locale
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -35,16 +35,13 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserProfile() {
-        ProfileRepository.getInstance().getProfile { profileData ->
-            if (profileData != null) {
-                binding.profileEDITName.setText(profileData["name"] as? String ?: "")
-                binding.profileEDITAge.setText((profileData["age"] as? Long)?.toString() ?: "0")
-                binding.profileEDITHeight.setText(
-                    (profileData["height"] as? Long)?.toString() ?: "0.0"
-                )
-                binding.profileEDITWeight.setText(
-                    (profileData["weight"] as? Long)?.toString() ?: "0.0"
-                )
+        ProfileRepository.getInstance().getProfile { profile ->
+            if (profile != null) {
+                binding.profileEDITName.setText(profile.name)
+                binding.profileEDITAge.setText(String.format(Locale.getDefault(), "%d", profile.age))
+                binding.profileEDITHeight.setText(String.format(Locale.getDefault(), "%.1f", profile.height))
+                binding.profileEDITWeight.setText(String.format(Locale.getDefault(), "%.1f", profile.weight))
+
 
                 ProfileRepository.getInstance().calculateBMI { bmi, status ->
                     binding.profileLBLBmi.text =
@@ -63,7 +60,15 @@ class ProfileFragment : Fragment() {
         val height = binding.profileEDITHeight.text.toString().toFloatOrNull() ?: 0f
         val weight = binding.profileEDITWeight.text.toString().toFloatOrNull() ?: 0f
 
-        ProfileRepository.getInstance().saveProfile(name, age, height, weight) { success ->
+        val updatedProfile = Profile.Builder()
+            .name(name)
+            .age(age)
+            .height(height)
+            .weight(weight)
+            .profileComplete(true)
+            .build()
+
+        ProfileRepository.getInstance().saveProfile(updatedProfile) { success ->
             if (success) {
                 requireActivity().supportFragmentManager
                     .setFragmentResult("update_home", Bundle())
@@ -80,5 +85,10 @@ class ProfileFragment : Fragment() {
 
         binding.profileBTNSave.visibility = if (enabled) View.VISIBLE else View.GONE
         binding.profileBTNEdit.visibility = if (enabled) View.GONE else View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

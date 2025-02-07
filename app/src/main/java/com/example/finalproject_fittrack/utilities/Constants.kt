@@ -3,6 +3,10 @@ package com.example.finalproject_fittrack.utilities
 
 class Constants {
 
+    object defaultNutritionValues {
+        const val DEFAULT_GOAL = 500
+    }
+
     object SharedPrefs {
         const val PREFS_NAME = "FitTrackPrefs"
         const val CALORIES_BURNED = "calories_burned"

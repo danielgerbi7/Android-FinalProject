@@ -1,6 +1,6 @@
 package com.example.finalproject_fittrack.ui.workout
 
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +21,7 @@ class WorkoutListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var workoutAdapter: CategoryWorkoutAdapter
-    private var workoutList: MutableList<WorkoutModel> = mutableListOf()
+    private var workoutList: MutableList<Workout> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -53,12 +53,12 @@ class WorkoutListFragment : Fragment() {
         workoutAdapter = CategoryWorkoutAdapter(
             workouts = workoutList,
             workoutFavoriteCallback = object : WorkoutFavoriteCallback {
-                override fun onFavoriteClicked(workout: WorkoutModel, position: Int) {
+                override fun onFavoriteClicked(workout: Workout, position: Int) {
                     toggleFavorite(workout, position)
                 }
             },
             workoutProgressCallback = object : WorkoutProgressCallback {
-                override fun onStartWorkout(workout: WorkoutModel, position: Int) {
+                override fun onStartWorkout(workout: Workout, position: Int) {
                     navigateToProgressScreen(workout)
                 }
             }
@@ -71,7 +71,7 @@ class WorkoutListFragment : Fragment() {
         }
     }
 
-    private fun toggleFavorite(workout: WorkoutModel, position: Int) {
+    private fun toggleFavorite(workout: Workout, position: Int) {
         WorkoutRepository.updateFavoriteStatus(workout) {
             WorkoutRepository.loadFavoriteWorkouts { favorites ->
                 workoutList.forEach { it.isFavorite = favorites.any { fav -> fav.name == it.name } }
@@ -80,7 +80,7 @@ class WorkoutListFragment : Fragment() {
         }
     }
 
-    private fun navigateToProgressScreen(workout: WorkoutModel) {
+    private fun navigateToProgressScreen(workout: Workout) {
         val bundle = Bundle().apply {
             putString("workout_name", workout.name)
             putInt("workout_duration", workout.duration)

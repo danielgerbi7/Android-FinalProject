@@ -1,8 +1,8 @@
 package com.example.finalproject_fittrack.interfaces
 
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 
 
 interface WorkoutProgressCallback {
-    fun onStartWorkout(workout: WorkoutModel, position: Int)
+    fun onStartWorkout(workout: Workout, position: Int)
 }

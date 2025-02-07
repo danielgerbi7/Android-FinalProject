@@ -2,6 +2,8 @@ package com.example.finalproject_fittrack.dataBase
 
 import android.content.Context
 import com.example.finalproject_fittrack.dataBase.FirebaseRepository.getUserReference
+import com.example.finalproject_fittrack.models.DailyGoalManager
+import com.example.finalproject_fittrack.models.Profile
 import com.example.finalproject_fittrack.utilities.Constants
 import com.example.finalproject_fittrack.utilities.DateDetails
 
@@ -26,158 +28,84 @@ class ProfileRepository private constructor() {
         }
     }
 
-    fun saveProfile(
-        name: String,
-        age: Int,
-        height: Float,
-        weight: Float,
-        onComplete: (Boolean) -> Unit
-    ) {
+    fun saveProfile(profile: Profile, onComplete: (Boolean) -> Unit) {
         val userRef = getUserReference() ?: return
 
-        userRef.get().addOnSuccessListener { snapshot ->
-            val existingData = snapshot.value as? Map<String, Any> ?: emptyMap()
+        val profileData = mapOf(
+            "name" to profile.name,
+            "age" to profile.age,
+            "height" to profile.height,
+            "weight" to profile.weight,
+            "profile_complete" to profile.profileComplete,
+            "calories_burned" to (profile.caloriesBurned ?: 0),
+            "daily_goal" to (profile.dailyGoal ?: 500),
+            "favorite_workouts" to (profile.favoriteWorkouts ?: emptyList<String>())
+        )
 
-            val updatedData = mutableMapOf<String, Any>(
-                "name" to name,
-                "age" to age,
-                "height" to height,
-                "weight" to weight,
-                "profile_complete" to true
-            )
-
-            existingData["calories_burned"]?.let { updatedData["calories_burned"] = it }
-            existingData["daily_goal"]?.let { updatedData["daily_goal"] = it }
-            existingData["favorite_workouts"]?.let { updatedData["favorite_workouts"] = it }
-
-            userRef.updateChildren(updatedData)
-                .addOnSuccessListener {
-                    WorkoutRepository.checkAndSaveDefaultWorkouts()
-                    onComplete(true)
-                }
-                .addOnFailureListener { onComplete(false) }
-        }.addOnFailureListener {
-            onComplete(false)
-        }
+        userRef.updateChildren(profileData)
+            .addOnSuccessListener {
+                WorkoutRepository.checkAndSaveDefaultWorkouts()
+                onComplete(true)
+            }
+            .addOnFailureListener { onComplete(false) }
     }
 
-    fun getProfile(onComplete: (Map<String, Any>?) -> Unit) {
+    fun getProfile(onComplete: (Profile?) -> Unit) {
         val userRef = getUserReference() ?: return
 
         userRef.get().addOnSuccessListener { snapshot ->
-            val profileData = snapshot.value as? Map<String, Any>
+            val data = snapshot.value as? Map<String, Any> ?: emptyMap()
+
             DailyGoalManager.getDailyProgress { progress ->
-                val combinedData = (profileData ?: mutableMapOf()).toMutableMap().apply {
-                    put("daily_goal", progress.goal)
-                    put("calories_burned", progress.caloriesBurned)
-                }
-                onComplete(combinedData)
+                val profile = Profile.Builder()
+                    .name(data["name"] as? String ?: "")
+                    .age((data["age"] as? Number)?.toInt() ?: 0)
+                    .height((data["height"] as? Number)?.toFloat() ?: 0f)
+                    .weight((data["weight"] as? Number)?.toFloat() ?: 0f)
+                    .profileComplete(data["profile_complete"] as? Boolean ?: false)
+                    .caloriesBurned(progress.caloriesBurned)
+                    .dailyGoal(progress.goal)
+                    .favoriteWorkouts(data["favorite_workouts"] as? List<String>)
+                    .build()
+
+                onComplete(profile)
             }
         }.addOnFailureListener {
             onComplete(null)
         }
     }
 
+
     fun isProfileComplete(onComplete: (Boolean) -> Unit) {
-        getProfile { profileData ->
-            val isComplete = profileData?.get("profile_complete") as? Boolean ?: false
-            onComplete(isComplete)
+        getProfile { profile ->
+            onComplete(profile?.profileComplete ?: false)
         }
     }
 
     fun calculateBMI(onComplete: (Float, String) -> Unit) {
-        getProfile { profileData ->
-            val height = (profileData?.get("height") as? Number)?.toFloat() ?: 0f
-            val weight = (profileData?.get("weight") as? Number)?.toFloat() ?: 0f
 
-            val bmi: Float
-            val status: String
+        getProfile { profile ->
+            if (profile == null || profile.height <= 0 || profile.weight <= 0) {
+                onComplete(0f, "Unknown")
+                return@getProfile
+            }
+
+            val height = profile.height
+            val weight = profile.weight
 
             if (height > 0 && weight > 0) {
-                bmi = weight / ((height / 100) * (height / 100))
-                status = when {
+                val bmi = weight / ((height / 100) * (height / 100))
+                val status = when {
                     bmi < 18.5 -> "Underweight"
                     bmi in 18.5..24.9 -> "Normal"
                     bmi in 25.0..29.9 -> "Overweight"
                     else -> "Obese"
                 }
+                onComplete(bmi, status)
             } else {
-                bmi = 0f
-                status = "Unknown"
-            }
-            onComplete(bmi, status)
-        }
-    }
-
-    object DailyGoalManager {
-        private const val DEFAULT_GOAL = 500
-
-        data class DailyProgress(
-            val goal: Int = DEFAULT_GOAL,
-            val caloriesBurned: Int = 0,
-            val lastUpdateDate: String = ""
-        )
-
-        fun updateDailyGoal(goal: Int, onComplete: (Boolean) -> Unit) {
-            val userRef = getUserReference() ?: return
-            val updates = hashMapOf<String, Any>(
-                "daily_goal" to goal,
-                "calories_burned" to 0
-            )
-
-            userRef.updateChildren(updates)
-                .addOnSuccessListener { onComplete(true) }
-                .addOnFailureListener { onComplete(false) }
-        }
-
-        fun updateCaloriesBurned(calories: Int, onComplete: (Boolean) -> Unit) {
-            val userRef = getUserReference() ?: return
-            userRef.child("calories_burned").setValue(calories)
-                .addOnSuccessListener { onComplete(true) }
-                .addOnFailureListener { onComplete(false) }
-        }
-
-        fun getDailyProgress(onComplete: (DailyProgress) -> Unit) {
-            val userRef = getUserReference() ?: return
-            userRef.get().addOnSuccessListener { snapshot ->
-                val goal = (snapshot.child("daily_goal").value as? Long)?.toInt() ?: DEFAULT_GOAL
-                val caloriesBurned =
-                    (snapshot.child("calories_burned").value as? Long)?.toInt() ?: 0
-                val lastUpdateDate = snapshot.child("last_update_date").value as? String ?: ""
-
-                onComplete(DailyProgress(goal, caloriesBurned, lastUpdateDate))
-            }.addOnFailureListener {
-                onComplete(DailyProgress())
-            }
-        }
-
-        fun resetDailyProgress(context: Context, onComplete: (Boolean) -> Unit) {
-            val sharedPreferences =
-                context.getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, Context.MODE_PRIVATE)
-            val todayDate = DateDetails.getTodayDate()
-            val lastLoginDate =
-                sharedPreferences.getString(Constants.SharedPrefs.LAST_LOGIN_DATE, "")
-
-            if (lastLoginDate != todayDate) {
-                sharedPreferences.edit()
-                    .putInt(Constants.SharedPrefs.CALORIES_BURNED, 0)
-                    .putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate)
-                    .apply()
-
-                val userRef = getUserReference() ?: return
-                val updates = hashMapOf<String, Any>(
-                    "calories_burned" to 0,
-                    "last_update_date" to todayDate
-                )
-
-                userRef.updateChildren(updates)
-                    .addOnSuccessListener { onComplete(true) }
-                    .addOnFailureListener { onComplete(false) }
-            } else {
-                onComplete(true)
+                onComplete(0f, "Unknown")
             }
         }
     }
-
-
 }
+

@@ -1,6 +1,6 @@
 package com.example.finalproject_fittrack.ui.progress
 
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -17,7 +17,7 @@ class ProgressFragment : Fragment() {
     private var _binding: FragmentProgressBinding? = null
     private val binding get() = _binding!!
     private var workoutTimer: CountDownTimer? = null
-    private var activeWorkout: WorkoutModel? = null
+    private var activeWorkout: Workout? = null
     private var startTimeMillis: Long = 0
 
 
@@ -43,7 +43,7 @@ class ProgressFragment : Fragment() {
         }
     }
 
-    private fun startWorkout(workout: WorkoutModel) {
+    private fun startWorkout(workout: Workout) {
         activeWorkout = workout
         binding.progressLBLWorkoutName.text = workout.name
         "${workout.duration} min".also { binding.progressLBLDurationWorkout.text = it }
@@ -100,7 +100,7 @@ class ProgressFragment : Fragment() {
         resetUI()
     }
 
-    private fun calculateCaloriesBurned(workout: WorkoutModel): Int {
+    private fun calculateCaloriesBurned(workout: Workout): Int {
         val elapsedMillis = System.currentTimeMillis() - startTimeMillis
         val elapsedMinutes = elapsedMillis / 60000.0
         val caloriesPerMinute = workout.caloriesBurned.toDouble() / workout.duration

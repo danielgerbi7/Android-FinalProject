@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.finalproject_fittrack.dataBase.ProfileRepository
 import com.example.finalproject_fittrack.dataBase.WorkoutRepository
+import com.example.finalproject_fittrack.models.DailyGoalManager
 import com.example.finalproject_fittrack.utilities.Constants
 import com.example.finalproject_fittrack.utilities.DateDetails
 import com.firebase.ui.auth.AuthUI
@@ -72,12 +73,12 @@ class LoginActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(Constants.SharedPrefs.PREFS_NAME, MODE_PRIVATE)
         val lastLoginDate = sharedPreferences.getString(Constants.SharedPrefs.LAST_LOGIN_DATE, "")
 
-        ProfileRepository.DailyGoalManager.getDailyProgress { progress ->
+        DailyGoalManager.getDailyProgress { progress ->
             if (progress.goal <= 0) {
                 askUserForDailyGoal(isNewUser = false)
             } else {
                 if (lastLoginDate != todayDate) {
-                    ProfileRepository.DailyGoalManager.resetDailyProgress(this) { _ -> }
+                    DailyGoalManager.resetDailyProgress(this) { _ -> }
                     sharedPreferences.edit()
                         .putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate)
                         .apply()
@@ -97,7 +98,7 @@ class LoginActivity : AppCompatActivity() {
             .setPositiveButton("Save") { _, _ ->
                 val inputGoal = editText.text.toString().toIntOrNull()
                 if (inputGoal != null && inputGoal > 0) {
-                    ProfileRepository.DailyGoalManager.updateDailyGoal(inputGoal) { success ->
+                    DailyGoalManager.updateDailyGoal(inputGoal) { success ->
                         if (success) {
                             if (isNewUser) {
                                 redirectToProfileSetup()

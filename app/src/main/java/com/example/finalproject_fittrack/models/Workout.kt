@@ -2,7 +2,7 @@ package com.example.finalproject_fittrack.models
 
 import java.io.Serializable
 
-data class WorkoutModel(
+data class Workout(
     var name: String = "",
     var description: String = "",
     var imageRes: Any = "",
@@ -38,7 +38,7 @@ data class WorkoutModel(
         fun caloriesBurned(caloriesBurned: Int) = apply { this.caloriesBurned = caloriesBurned }
         fun duration(duration: Int) = apply { this.duration = duration }
 
-        fun build() = WorkoutModel(
+        fun build() = Workout(
             name,
             description,
             imageRes,

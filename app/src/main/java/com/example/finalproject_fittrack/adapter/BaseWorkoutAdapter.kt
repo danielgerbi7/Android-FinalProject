@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject_fittrack.R
 import com.example.finalproject_fittrack.databinding.ItemWorkoutBinding
-import com.example.finalproject_fittrack.models.WorkoutModel
+import com.example.finalproject_fittrack.models.Workout
 
 abstract class BaseWorkoutAdapter(
-    private var workouts: MutableList<WorkoutModel>
+    private var workouts: MutableList<Workout>
 ) : RecyclerView.Adapter<BaseWorkoutAdapter.BaseWorkoutViewHolder>() {
 
     abstract override fun onBindViewHolder(holder: BaseWorkoutViewHolder, position: Int)
@@ -26,7 +26,7 @@ abstract class BaseWorkoutAdapter(
     class BaseWorkoutViewHolder(val binding: ItemWorkoutBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    protected fun bindCommonWorkoutData(holder: BaseWorkoutViewHolder, workout: WorkoutModel) {
+    protected fun bindCommonWorkoutData(holder: BaseWorkoutViewHolder, workout: Workout) {
         with(holder.binding) {
             workoutLBLName.text = workout.name
             workoutLBLDescription.text = workout.description
