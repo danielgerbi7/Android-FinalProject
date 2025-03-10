@@ -107,5 +107,14 @@ class ProfileRepository private constructor() {
             }
         }
     }
+
+    fun updateProfileFields(updatedData: Map<String, Any>, onComplete: (Boolean) -> Unit) {
+        val userRef = getUserReference() ?: return
+
+        userRef.updateChildren(updatedData)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
+    }
+
 }
 

@@ -15,6 +15,8 @@ import java.util.Locale
 
 class ProfileFragment : Fragment() {
 
+    private var originalProfile: Profile? = null
+
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
@@ -44,6 +46,8 @@ class ProfileFragment : Fragment() {
     private fun loadUserProfile() {
         ProfileRepository.getInstance().getProfile { profile ->
             if (profile != null) {
+                originalProfile = profile
+
                 binding.profileEDITName.setText(profile.name)
                 binding.profileEDITAge.setText(String.format(Locale.getDefault(), "%d", profile.age))
                 binding.profileEDITHeight.setText(String.format(Locale.getDefault(), "%.1f", profile.height))
@@ -67,19 +71,24 @@ class ProfileFragment : Fragment() {
         val height = binding.profileEDITHeight.text.toString().toFloatOrNull() ?: 0f
         val weight = binding.profileEDITWeight.text.toString().toFloatOrNull() ?: 0f
 
-        val updatedProfile = Profile.Builder()
-            .name(name)
-            .age(age)
-            .height(height)
-            .weight(weight)
-            .profileComplete(true)
-            .build()
+        val updatedData = mutableMapOf<String, Any>()
 
-        ProfileRepository.getInstance().saveProfile(updatedProfile) { success ->
-            if (success) {
-                requireActivity().supportFragmentManager
-                    .setFragmentResult("update_home", Bundle())
-                loadUserProfile()
+        originalProfile?.let { profile ->
+            if (profile.name != name) updatedData["name"] = name
+            if (profile.age != age) updatedData["age"] = age
+            if (profile.height != height) updatedData["height"] = height
+            if (profile.weight != weight) updatedData["weight"] = weight
+        }
+
+        if (updatedData.isNotEmpty()) {
+            ProfileRepository.getInstance().updateProfileFields(updatedData) { success ->
+                if (success) {
+                    requireActivity().supportFragmentManager.setFragmentResult(
+                        "update_home",
+                        Bundle()
+                    )
+                    loadUserProfile()
+                }
             }
         }
     }
