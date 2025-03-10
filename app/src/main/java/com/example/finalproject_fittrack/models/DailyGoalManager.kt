@@ -7,7 +7,6 @@ import com.example.finalproject_fittrack.utilities.DateDetails
 
 object DailyGoalManager {
 
-
     data class DailyProgress(
         val goal: Int = DEFAULT_GOAL,
         val caloriesBurned: Int = 0,

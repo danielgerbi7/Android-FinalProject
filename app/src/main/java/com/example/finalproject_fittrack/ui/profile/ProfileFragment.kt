@@ -1,13 +1,16 @@
 package com.example.finalproject_fittrack.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.finalproject_fittrack.LoginActivity
 import com.example.finalproject_fittrack.databinding.FragmentProfileBinding
 import com.example.finalproject_fittrack.dataBase.ProfileRepository
 import com.example.finalproject_fittrack.models.Profile
+import com.firebase.ui.auth.AuthUI
 import java.util.Locale
 
 class ProfileFragment : Fragment() {
@@ -29,6 +32,10 @@ class ProfileFragment : Fragment() {
         binding.profileBTNSave.setOnClickListener {
             saveProfile()
             enableEditing(false)
+        }
+
+        binding.profileBTNSignOut.setOnClickListener {
+            signOutUser()
         }
 
         return binding.root
@@ -87,6 +94,13 @@ class ProfileFragment : Fragment() {
         binding.profileBTNEdit.visibility = if (enabled) View.GONE else View.VISIBLE
     }
 
+    private fun signOutUser() {
+        AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

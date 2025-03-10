@@ -45,22 +45,26 @@ class LeaderboardFragment : Fragment() {
     private fun loadLeaderboard() {
         LeaderboardRepository.getLeaderboard { leaderboard ->
             leaderboardList.clear()
-            leaderboardList.addAll(leaderboard)
+            val sortedLeaderboard = leaderboard.sortedByDescending { it.third }
+            val leaderboardWithRank = sortedLeaderboard.mapIndexed { index, entry ->
+                Triple(entry.second, entry.third, index + 1)
+            }
+            leaderboardList.addAll(leaderboardWithRank.map { Pair(it.first, it.second) })
             leaderboardAdapter.notifyDataSetChanged()
 
-            val currentUserName = FirebaseRepository.getCurrentUserName()
+            val currentUid = FirebaseRepository.getCurrentUserId()?.trim()
+            println("Current User UID: '$currentUid'")
 
-            val userRank = leaderboardList.indexOfFirst { it.first == currentUserName } + 1
+            val userRank = sortedLeaderboard.indexOfFirst { it.first == currentUid } + 1
 
             if (userRank > 0) {
-                "You are currently ranked #$userRank".also {
-                    binding.leaderboardLBLRankPlaceholder.text = it
-                }
+                "You are currently ranked #$userRank".also { binding.leaderboardLBLRankPlaceholder.text = it }
             } else {
                 "You are not ranked yet".also { binding.leaderboardLBLRankPlaceholder.text = it }
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

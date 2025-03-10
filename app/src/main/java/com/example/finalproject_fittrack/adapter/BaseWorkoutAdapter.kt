@@ -28,6 +28,17 @@ abstract class BaseWorkoutAdapter(
 
     protected fun bindCommonWorkoutData(holder: BaseWorkoutViewHolder, workout: Workout) {
         with(holder.binding) {
+
+            val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            when (holder.adapterPosition) {
+                workouts.size - 1 -> {
+                    params.bottomMargin = 150
+                }
+                else -> {
+                    params.bottomMargin = 0
+                }
+            }
+
             workoutLBLName.text = workout.name
             workoutLBLDescription.text = workout.description
             "${workout.caloriesBurned} kcal".also { workoutLBLCalories.text = it }

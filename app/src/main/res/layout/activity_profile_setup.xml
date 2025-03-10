@@ -47,4 +47,14 @@
         android:layout_margin="@dimen/margin_8"
         android:minHeight="48dp"
         android:text="@string/save_profile" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_BTN_sign_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_8"
+        android:minHeight="48dp"
+        android:text="@string/sign_out"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"/>
 </LinearLayout>

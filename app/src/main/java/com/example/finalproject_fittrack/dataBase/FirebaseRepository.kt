@@ -20,7 +20,4 @@ object FirebaseRepository {
         return database.child(userId)
     }
 
-    fun getCurrentUserName(): String? {
-        return auth.currentUser?.displayName
-    }
 }

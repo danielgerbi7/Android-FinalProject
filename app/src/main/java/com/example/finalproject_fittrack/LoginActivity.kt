@@ -2,6 +2,7 @@ package com.example.finalproject_fittrack
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -15,6 +16,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
+import androidx.core.content.edit
 
 class LoginActivity : AppCompatActivity() {
 
@@ -37,7 +39,8 @@ class LoginActivity : AppCompatActivity() {
     private fun startLoginProcess() {
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(),
-            AuthUI.IdpConfig.PhoneBuilder().build()
+            AuthUI.IdpConfig.PhoneBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build(),
         )
 
         val signInIntent = AuthUI.getInstance()
@@ -79,13 +82,15 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 if (lastLoginDate != todayDate) {
                     DailyGoalManager.resetDailyProgress(this) { _ -> }
-                    sharedPreferences.edit()
-                        .putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate)
-                        .apply()
+                    sharedPreferences.edit {
+                        putString(Constants.SharedPrefs.LAST_LOGIN_DATE, todayDate)
+                    }
                 }
                 redirectToMain()
             }
         }
+
+        Log.d("Daily goal", "getDailyProgress failed")
     }
 
     private fun askUserForDailyGoal(isNewUser: Boolean) {

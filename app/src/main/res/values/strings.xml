@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">finalProject-FitTrack</string>
+    <string name="app_name">FitTrack</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -42,4 +42,5 @@
     <string name="david">David</string>
     <string name="leaderboard_daily_calories">Leaderboard - Daily Calories</string>
     <string name="you_are_currently_ranked">You are currently ranked #1</string>
+    <string name="sign_out">Sign Out</string>
 </resources>
