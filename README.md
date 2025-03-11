@@ -46,25 +46,25 @@ Contributions to the project are welcome. You can fork the repository, make modi
 **1. Splash Screen**
 
 | <img src="images/SplashScreen.jpeg" alt="Splash Screeb - Light Mode" width="300"/> |
-|-----------------------------------------------------------------------|
+|------------------------------------------------------------------------------------|
 
 **2. Login Screen**
 
 | <img src="images/LoginScreen.jpeg" alt="Login Screen - Light Mode" width="300"/> |
-|-----------------------------------------------------------------------|
+|----------------------------------------------------------------------------------|
 
 **3. Home Screen**
 
 | <img src="images/HomeScreen.jpeg" alt="Home Screen - Light Mode" width="300"/> |
-|-----------------------------------------------------------------------|
+|--------------------------------------------------------------------------------|
 
 **4. Workout Plans Screens**
 
 | <img src="images/WorkoutPlans.jpeg" alt="Workout Plans - Light Mode" width="300"/> |
-|-----------------------------------------------------------------------|
+|------------------------------------------------------------------------------------|
 
-| <img src="images/StrengthWorkout.jpeg" alt="Strength Workout - Light Mode" width="300"/> |
-|-----------------------------------------------------------------------|
+| <img src="images/StrengthWorkouts.jpeg" alt="Strength Workout - Light Mode" width="300"/> |
+|-------------------------------------------------------------------------------------------|
 
 | <img src="images/CardioWorkout.jpeg" alt="Cardio Workout - Light Mode" width="300"/> |
 |--------------------------------------------------------------------------------------|
@@ -72,7 +72,7 @@ Contributions to the project are welcome. You can fork the repository, make modi
 **5. Progress Screen**
 
 | <img src="images/ProgressScreen.jpeg" alt="Progress Screen - Light Mode" width="300"/> |
-|--------------------------------------------------------------------------------------|
+|----------------------------------------------------------------------------------------|
 
 **6. Profile Screen**
 
